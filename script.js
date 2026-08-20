@@ -373,4 +373,165 @@ document.getElementById('copyOrder').addEventListener('click',async()=>{
   }catch(e){alert('Copy failed. You can select the order details manually.');}
 });
 
+
+const TEST_MODE = new URLSearchParams(window.location.search).get('test') === '1';
+const testModeBanner = document.getElementById('testModeBanner');
+const simulatePaidOrderBtn = document.getElementById('simulatePaidOrder');
+const testOrderDialog = document.getElementById('testOrderDialog');
+
+if(TEST_MODE){
+  if(testModeBanner) testModeBanner.hidden = false;
+  if(simulatePaidOrderBtn) simulatePaidOrderBtn.hidden = false;
+}
+
+function ownerField(label,value){
+  const safeValue = value === null || value === undefined || String(value).trim()==='' ? '—' : String(value);
+  return `<div class="owner-field"><span>${escapeHtml(label)}</span><strong>${escapeHtml(safeValue)}</strong></div>`;
+}
+
+function friendlyColor(name, hex){
+  const n=(name || '').trim();
+  if(n) return n;
+  const common={
+    '#ffffff':'White','#000000':'Black','#e64b7d':'Pink','#ff0000':'Red',
+    '#0000ff':'Blue','#000080':'Navy','#800000':'Maroon','#008000':'Green',
+    '#800080':'Purple','#ffd700':'Gold','#c0c0c0':'Silver','#ffa500':'Orange'
+  };
+  return common[String(hex || '').toLowerCase()] || String(hex || '—').toUpperCase();
+}
+
+function createTestOrderNumber(){
+  const d=new Date();
+  const stamp=[
+    String(d.getMonth()+1).padStart(2,'0'),
+    String(d.getDate()).padStart(2,'0'),
+    String(d.getHours()).padStart(2,'0'),
+    String(d.getMinutes()).padStart(2,'0')
+  ].join('');
+  return `TEST-${stamp}`;
+}
+
+function buildOwnerOrderView(){
+  const d=new FormData(form), c=calc();
+  const depositPct = SITE_CONFIG.ordering?.deposit_percent ?? 50;
+  const deposit = c.total * (depositPct/100);
+  const balance = c.total - deposit;
+  const add=addonChecks.filter(x=>x.checked).map(x=>x.value);
+  const braid=form.elements.braid.options[form.elements.braid.selectedIndex].text;
+  const printed=form.elements.printedRibbon.options[form.elements.printedRibbon.selectedIndex].text;
+  const primaryHex=d.get('primaryColor'), secondaryHex=d.get('secondaryColor');
+  const primary=friendlyColor(d.get('primaryColorName'),primaryHex);
+  const secondary=friendlyColor(d.get('secondaryColorName'),secondaryHex);
+  const fileCount=form.elements.inspiration.files?.length || 0;
+
+  document.getElementById('testOrderNumber').textContent=createTestOrderNumber();
+  document.getElementById('testOrderTime').textContent=new Date().toLocaleString();
+
+  document.getElementById('ownerStudent').innerHTML =
+    ownerField('Student',d.get('studentName'))+
+    ownerField('Nickname',d.get('nickname'))+
+    ownerField('School',d.get('school'))+
+    ownerField('Mascot',d.get('mascot'))+
+    ownerField('Grade',d.get('grade'))+
+    ownerField('Graduation year',d.get('gradYear'))+
+    ownerField('Jersey / player #',d.get('number'))+
+    ownerField('Homecoming date',d.get('homecomingDate'));
+
+  document.getElementById('ownerBuild').innerHTML =
+    ownerField('Tier',`${c.pkg.value} • starts at ${money(c.base)}`)+
+    ownerField('Size',d.get('size'))+
+    ownerField('Length',d.get('length'))+
+    ownerField('Fullness',d.get('fullness'));
+
+  document.getElementById('ownerColors').innerHTML = `
+    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(primaryHex)}"></span>Primary: ${escapeHtml(primary)} <small>${escapeHtml(primaryHex)}</small></div>
+    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(secondaryHex)}"></span>Secondary: ${escapeHtml(secondary)} <small>${escapeHtml(secondaryHex)}</small></div>
+    <div class="color-chip">Accent: ${escapeHtml(d.get('accentColor') || 'None')}</div>
+    <div class="color-chip">Style: ${escapeHtml(d.get('style') || '—')}</div>`;
+
+  document.getElementById('ownerPersonal').textContent =
+`Sports / clubs / activities:
+${d.get('activities') || '—'}
+
+Favorite things: ${d.get('favorites') || '—'}
+Favorite song: ${d.get('song') || '—'}
+Bible verse / quote: ${d.get('quote') || '—'}
+Special date / relationship detail: ${d.get('specialDate') || '—'}`;
+
+  document.getElementById('ownerUpgrades').textContent =
+`Premium packages:
+${add.length ? '• '+add.join('\n• ') : 'None selected'}
+
+Specialty braid: ${braid}
+Custom printed ribbon: ${printed}
+Printed ribbon wording: ${d.get('ribbonText') || '—'}
+Inspiration photos selected: ${fileCount}`;
+
+  document.getElementById('ownerInstructions').textContent=d.get('instructions') || 'No additional instructions provided.';
+
+  document.getElementById('ownerSubtotal').textContent=money(c.subtotal);
+  document.getElementById('ownerDiscount').textContent='-'+money(c.discount);
+  document.getElementById('ownerDiscountRow').hidden=!activePromo;
+  document.getElementById('ownerTotal').textContent=money(c.total);
+  document.getElementById('ownerDeposit').textContent=money(deposit);
+  document.getElementById('ownerBalance').textContent=money(balance);
+
+  document.getElementById('ownerCustomer').textContent =
+`Name: ${d.get('customerName') || '—'}
+Phone: ${d.get('phone') || '—'}
+Email: ${d.get('email') || '—'}
+Preferred contact: ${d.get('contactMethod') || '—'}`;
+
+  const referralCard=document.getElementById('ownerReferralCard');
+  if(activePromo){
+    referralCard.hidden=false;
+    document.getElementById('ownerReferral').textContent =
+`Code: ${activePromo.code}
+Student: ${activePromo.name}
+School: ${activePromo.school || '—'}
+Customer discount: ${SITE_CONFIG.referral.discount_percent}%
+Referral credit: TEST ONLY — not counted`;
+  }else{
+    referralCard.hidden=true;
+  }
+}
+
+function ownerOrderText(){
+  const d=new FormData(form), c=calc();
+  const depositPct=SITE_CONFIG.ordering?.deposit_percent ?? 50;
+  const deposit=c.total*(depositPct/100);
+  const balance=c.total-deposit;
+  return `HEART & SOUL SIGNATURE MUMS
+TEST ORDER — PAYMENT SIMULATED
+
+${orderText()}
+
+PAYMENT STATUS
+TEST — deposit simulated as paid
+Deposit: ${money(deposit)}
+Remaining balance: ${money(balance)}
+
+This test order was not submitted, stored, charged, emailed, or counted as a referral.`;
+}
+
+if(simulatePaidOrderBtn){
+  simulatePaidOrderBtn.addEventListener('click',()=>{
+    buildOwnerOrderView();
+    dialog.close();
+    testOrderDialog.showModal();
+  });
+}
+document.getElementById('closeTestOrder')?.addEventListener('click',()=>testOrderDialog.close());
+document.getElementById('closeOwnerView')?.addEventListener('click',()=>testOrderDialog.close());
+document.getElementById('copyOwnerOrder')?.addEventListener('click',async()=>{
+  try{
+    await navigator.clipboard.writeText(ownerOrderText());
+    const b=document.getElementById('copyOwnerOrder'), old=b.textContent;
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent=old,1500);
+  }catch(e){
+    alert('Copy failed. You can still review the test order on screen.');
+  }
+});
+
 loadSiteConfig();
