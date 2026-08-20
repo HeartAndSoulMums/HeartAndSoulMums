@@ -22,3 +22,11 @@ Edit in `/admin/` → click Publish → Decap commits `content/site.json` or upl
 
 ## Important
 This update does not yet add a payment processor, database-backed referral counts, or cloud storage for customer inspiration uploads. Those are backend/payment features, separate from owner content editing.
+
+
+## Full-payment workflow
+The site now assumes customers pay the full amount before production begins.
+Deposit-percentage controls have been removed.
+
+## Safe test ordering
+Use `/test/` to simulate a paid-in-full order without charging or storing anything.

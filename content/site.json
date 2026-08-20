@@ -92,8 +92,12 @@
   },
   "policies": [
     {
-      "title": "50% Deposit",
-      "body": "A nonrefundable design/material deposit reserves the order. Specialty-material orders may require a larger deposit."
+      "title": "Payment in Full",
+      "body": "Full payment is required before production begins and confirms the order."
+    },
+    {
+      "title": "Custom Order Refunds",
+      "body": "Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."
     },
     {
       "title": "Design Changes",
@@ -102,10 +106,6 @@
     {
       "title": "Rush Orders",
       "body": "Rush orders may carry an additional fee and are accepted only when schedule and materials allow."
-    },
-    {
-      "title": "Final Balance",
-      "body": "Remaining balance is due before pickup unless another arrangement has been confirmed."
     }
   ],
   "rush": [
@@ -145,8 +145,9 @@
   "ordering": {
     "accepting_orders": true,
     "closed_message": "We are currently at capacity for new orders. Please check back soon.",
-    "deposit_percent": 50,
     "minimum_lead_days": 14,
-    "pickup_instructions": "Pickup details are confirmed after your order is approved."
+    "pickup_instructions": "Pickup details are confirmed after your order is approved.",
+    "payment_policy": "Full payment is required before production begins.",
+    "refund_policy": "Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."
   }
 }

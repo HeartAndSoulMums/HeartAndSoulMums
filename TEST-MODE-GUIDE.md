@@ -1,14 +1,21 @@
-# Test Order Mode
+# Test Order Mode — Full Payment
 
-After this version is deployed, add `?test=1` to the normal website URL:
+Use this dedicated URL after Netlify redeploys:
 
-`https://heartandsoulmums.netlify.app/?test=1`
+https://heartandsoulmums.netlify.app/test/
 
-Then:
-1. Fill out a mock order.
-2. Click **Review Order Request**.
-3. The review modal will show **Simulate Paid Test Order**.
-4. Click it to open the owner-side **New order received** view.
-5. No payment is charged and nothing is submitted, stored, emailed, or counted toward referrals.
+This route is intentionally separate from `/admin/`, so Decap's `#/collections/...`
+admin routing cannot interfere with test ordering.
 
-The normal URL without `?test=1` does not show the simulation button.
+## Test flow
+1. Open `/test/`.
+2. Confirm the yellow TEST MODE banner is visible.
+3. Fill out a mock customer order.
+4. Click **Review Order Request**.
+5. Click **Simulate Paid Test Order**.
+6. The owner view will show:
+   - `PAID IN FULL — TEST`
+   - the full amount paid
+   - `$0.00` balance due
+
+Nothing is charged, stored, emailed, submitted, or counted toward referrals.

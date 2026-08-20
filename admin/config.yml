@@ -129,8 +129,9 @@ collections:
             fields:
               - { label: "Accepting new orders", name: "accepting_orders", widget: "boolean", default: true }
               - { label: "Closed-order message", name: "closed_message", widget: "string", required: false }
-              - { label: "Deposit percent", name: "deposit_percent", widget: "number", value_type: "int", min: 0, max: 100 }
               - { label: "Minimum lead time (days)", name: "minimum_lead_days", widget: "number", value_type: "int", min: 0 }
+              - { label: "Payment policy", name: "payment_policy", widget: "text" }
+              - { label: "Refund policy", name: "refund_policy", widget: "text" }
               - { label: "Pickup instructions", name: "pickup_instructions", widget: "text", required: false }
 
           - label: "Student Referral Codes"
