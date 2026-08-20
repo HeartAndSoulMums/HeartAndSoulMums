@@ -21,8 +21,9 @@
           <label>Owner password
             <input id="ownerKey" type="password" autocomplete="current-password" required>
           </label>
-          <button type="submit">Open Orders</button>
-          <p id="loginError" class="error" aria-live="polite"></p>
+          <button id="openOrdersBtn" type="submit">Open Orders</button>
+          <p id="loginStatus" class="login-status" aria-live="polite">Dashboard script loaded: checking…</p>
+          <p id="loginError" class="error" aria-live="assertive"></p>
         </form>
       </div>
     </section>
@@ -78,6 +79,6 @@
     <div id="orderDetail"></div>
   </dialog>
 
-  <script src="/orders/orders.js"></script>
+  <script src="/orders/orders.js?v=6.1"></script>
 </body>
 </html>

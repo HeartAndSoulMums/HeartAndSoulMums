@@ -14,3 +14,14 @@ dialog{width:min(1100px,calc(100% - 28px));max-height:92vh;overflow:auto;border:
 @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}.order-row{grid-template-columns:1fr 1fr 110px}.order-row .school,.order-row .arrow{display:none}.detail-layout{grid-template-columns:1fr}}
 @media(max-width:600px){.topbar{align-items:flex-start;padding:12px 18px}.brand span{display:none}.dashboard{padding:30px 15px 60px}.dashboard-head{display:block}.dashboard-head h1{font-size:38px}.updated{margin-top:10px}.stats{grid-template-columns:1fr 1fr}.controls{grid-template-columns:1fr}.order-row{grid-template-columns:1fr 100px;padding:14px}.order-row .customer{grid-column:1}.order-row .amount{grid-column:2;grid-row:1}.order-row .status-wrap{grid-column:1 / -1}.detail{padding:24px 16px}.detail-top{display:block}.detail h2{font-size:31px}.field-grid{grid-template-columns:1fr}}
 @media print{body{background:white}.topbar,.dashboard,.close,.detail-actions{display:none!important}dialog{position:static!important;width:100%!important;max-height:none!important;box-shadow:none!important;border-radius:0!important}.detail{padding:0}.detail-layout{grid-template-columns:1fr 320px}.card{break-inside:avoid}}
+
+.login-status{
+  min-height:20px;
+  margin:12px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+.login-card button:disabled{
+  opacity:.65;
+  cursor:wait;
+}

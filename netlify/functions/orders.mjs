@@ -80,9 +80,14 @@ export default async (request, context) => {
         data: s.data || {}
       }));
 
-      const statuses = await readStatuses(
-        orders.map(o => o.data.orderNumber || o.id)
-      );
+      let statuses = {};
+      try {
+        statuses = await readStatuses(
+          orders.map(o => o.data.orderNumber || o.id)
+        );
+      } catch (statusError) {
+        console.warn("Status storage unavailable; continuing with New status.", statusError);
+      }
 
       for (const order of orders) {
         const orderNo = order.data.orderNumber || order.id;

@@ -1,3 +1,4 @@
+document.getElementById("loginStatus").textContent="Ready. Enter the owner password.";
 const $=s=>document.querySelector(s);
 let ownerKey="";
 let orders=[];
@@ -27,27 +28,68 @@ function studentName(o){return o.data.studentName||"Unnamed student"}
 function customerName(o){return o.data.customerName||"Unknown customer"}
 
 async function api(method="GET",body){
-  const res=await fetch("/.netlify/functions/orders",{
-    method,
-    headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},
-    body:body?JSON.stringify(body):undefined
-  });
-  const data=await res.json().catch(()=>({}));
-  if(!res.ok) throw new Error(data.error||"Request failed");
+  let res;
+  try{
+    res=await fetch("/.netlify/functions/orders",{
+      method,
+      headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},
+      body:body?JSON.stringify(body):undefined,
+      cache:"no-store"
+    });
+  }catch(err){
+    throw new Error("Could not reach the server function. Check the latest Netlify deploy.");
+  }
+
+  const raw=await res.text();
+  let data={};
+  try{ data=raw ? JSON.parse(raw) : {}; }
+  catch{
+    throw new Error(`Server returned an unexpected response (${res.status}).`);
+  }
+
+  if(!res.ok){
+    if(res.status===401) throw new Error("Unauthorized");
+    throw new Error(data.error || `Server error (${res.status})`);
+  }
   return data;
 }
 
 async function login(e){
   e.preventDefault();
-  ownerKey=$("#ownerKey").value;
-  $("#loginError").textContent="";
+
+  const btn=$("#openOrdersBtn");
+  const status=$("#loginStatus");
+  const error=$("#loginError");
+
+  ownerKey=$("#ownerKey").value.trim();
+  error.textContent="";
+
+  if(!ownerKey){
+    error.textContent="Enter the owner dashboard password.";
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent="Connecting…";
+  status.textContent="Connecting securely to Heart & Soul orders…";
+
   try{
-    await loadOrders();
+    const data=await api();
+    orders=data.orders||[];
+    $("#lastUpdated").textContent=`Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    render();
     $("#loginView").hidden=true;
     $("#dashboardView").hidden=false;
   }catch(err){
-    $("#loginError").textContent=err.message==="Unauthorized"?"Incorrect owner password.":err.message;
+    console.error("Orders dashboard login error:",err);
+    let message=err?.message || "Could not connect to the Orders Dashboard.";
+    if(message==="Unauthorized") message="Incorrect owner password.";
+    error.textContent=message;
+    status.textContent="Could not open the dashboard.";
     ownerKey="";
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Open Orders";
   }
 }
 async function loadOrders(){
