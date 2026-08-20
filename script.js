@@ -372,6 +372,74 @@ document.getElementById('copyOrder').addEventListener('click',async()=>{
 });
 
 
+
+function realOrderNumber(){
+  const d=new Date();
+  const y=String(d.getFullYear()).slice(-2);
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  const rand=Math.floor(1000+Math.random()*9000);
+  return `HS-${y}${m}${day}-${rand}`;
+}
+
+function encodeFormData(formData){
+  return new URLSearchParams(formData).toString();
+}
+
+async function submitOrderToNetlify(){
+  const submitBtn=document.getElementById('submitRealOrder');
+  if(TEST_MODE){
+    alert('Test mode never submits a real order. Use “Simulate Paid Test Order” instead.');
+    return;
+  }
+  const c=calc();
+  const orderNo=realOrderNumber();
+
+  document.getElementById('orderSummaryField').value = orderText();
+  document.getElementById('estimatedTotalField').value = c.total.toFixed(2);
+  document.getElementById('promoCodeAppliedField').value = activePromo?.code || '';
+  document.getElementById('referralStudentField').value = activePromo?.name || '';
+  document.getElementById('referralSchoolField').value = activePromo?.school || '';
+
+  const fd=new FormData(form);
+  fd.append('orderNumber',orderNo);
+  fd.append('submittedAt',new Date().toISOString());
+
+  submitBtn.disabled=true;
+  const old=submitBtn.textContent;
+  submitBtn.textContent='Submitting…';
+
+  try{
+    const response=await fetch('/',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:encodeFormData(fd)
+    });
+    if(!response.ok) throw new Error('Submission failed');
+
+    document.getElementById('confirmationOrderNumber').textContent=orderNo;
+    document.getElementById('confirmationTotal').textContent=money(c.total);
+    dialog.close();
+    document.getElementById('confirmationDialog').showModal();
+  }catch(err){
+    console.error(err);
+    alert('The order could not be submitted. Please try again.');
+  }finally{
+    submitBtn.disabled=false;
+    submitBtn.textContent=old;
+  }
+}
+
+document.getElementById('submitRealOrder')?.addEventListener('click',submitOrderToNetlify);
+document.getElementById('closeConfirmation')?.addEventListener('click',()=>document.getElementById('confirmationDialog').close());
+document.getElementById('finishConfirmation')?.addEventListener('click',()=>{
+  document.getElementById('confirmationDialog').close();
+  form.reset();
+  activePromo=null;
+  calc();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
 const TEST_MODE = new URLSearchParams(window.location.search).get('test') === '1' || window.location.pathname.startsWith('/test');
 const testModeBanner = document.getElementById('testModeBanner');
 const simulatePaidOrderBtn = document.getElementById('simulatePaidOrder');

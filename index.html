@@ -141,8 +141,15 @@
     </div>
 
     <div class="builder-layout">
-      <form id="mumForm" class="builder-form">
+      <form id="mumForm" class="builder-form" name="mum-order" method="POST" data-netlify="true" netlify-honeypot="bot-field">
 
+        <input type="hidden" name="form-name" value="mum-order">
+        <p class="hidden-honeypot"><label>Don’t fill this out: <input name="bot-field"></label></p>
+        <input type="hidden" name="orderSummary" id="orderSummaryField">
+        <input type="hidden" name="estimatedTotal" id="estimatedTotalField">
+        <input type="hidden" name="promoCodeApplied" id="promoCodeAppliedField">
+        <input type="hidden" name="referralStudent" id="referralStudentField">
+        <input type="hidden" name="referralSchool" id="referralSchoolField">
         <div class="form-card">
           <div class="step-number">1</div>
           <div class="form-content">
@@ -438,13 +445,28 @@
   <h2>Review the details</h2>
   <div id="dialogSummary"></div>
   <div class="dialog-actions">
-    <button class="button" id="copyOrder">Copy Order Details</button>
+    <button class="button" id="submitRealOrder">Submit Order</button>
     <button class="button test-button" id="simulatePaidOrder" hidden>Simulate Paid Test Order</button>
     <button class="button secondary" id="editOrder">Keep Editing</button>
   </div>
-  <p class="tiny-note">When payment is connected, the final site can collect the full order amount securely after the order is reviewed.</p>
+  <p class="tiny-note">Submitting sends this order to Heart & Soul for review. Online payment will be added when the payment processor is connected.</p>
 </dialog>
 
+
+
+<dialog id="confirmationDialog" class="confirmation-dialog">
+  <button class="dialog-close" id="closeConfirmation" aria-label="Close">×</button>
+  <div class="confirmation-mark">✓</div>
+  <span class="eyebrow">ORDER RECEIVED</span>
+  <h2>Thank you!</h2>
+  <p>Your Heart & Soul order request has been submitted successfully.</p>
+  <div class="confirmation-details">
+    <div><span>Order reference</span><strong id="confirmationOrderNumber">—</strong></div>
+    <div><span>Estimated total</span><strong id="confirmationTotal">—</strong></div>
+  </div>
+  <p class="confirmation-copy">Heart & Soul will review the custom details and contact you if anything needs clarification. Payment will be collected once online checkout is connected.</p>
+  <button class="button" id="finishConfirmation">Done</button>
+</dialog>
 
 <dialog id="testOrderDialog" class="test-order-dialog">
   <button class="dialog-close" id="closeTestOrder" aria-label="Close">×</button>
