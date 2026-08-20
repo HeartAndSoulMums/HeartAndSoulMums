@@ -19,7 +19,7 @@
         <img src="/heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums">
         <span class="eyebrow">OWNER ACCESS</span>
         <h1>Orders Dashboard</h1>
-        <p>Enter the private owner dashboard password to view customer orders.</p><div style="font-size:10px;color:#9a8e93;margin:-5px 0 16px;letter-spacing:.06em">BUILD: LOGIN-FIX</div>
+        <p>Enter the private owner dashboard password to view customer orders.</p><div style="font-size:10px;color:#9a8e93;margin:-5px 0 16px;letter-spacing:.06em">BUILD: DISPLAY-FIX</div>
         <form id="loginForm">
           <label>Owner password
             <input id="ownerKey" type="password" autocomplete="current-password" required>
@@ -184,7 +184,7 @@ Student: ${esc(d.referralStudent||"—")}
 School: ${esc(d.referralSchool||"—")}</div></section>`:""}<section class="card"><h3>Submission</h3><div class="copytext">Received: ${esc(dateTime(o.createdAt))}
 Order #: ${esc(o.orderNumber)}</div></section></aside></div></div>`;
   $("#orderDialog").showModal();$("#printOrder").addEventListener("click",()=>window.print());
-  $("#detailStatus").addEventListener("change",async e=>{const next=e.target.value,prior=o.status||"New";e.target.disabled=true;try{await api("POST",{orderNumber:o.orderNumber,status:next});o.status=next;render();$("#orderDialog").close();openOrder(o.orderNumber)}catch(err){e.target.value=prior;alert("Could not update status: "+err.message)}finally{e.target.disabled=false}})
+  $("#detailStatus").addEventListener("change",async e=>{const next=e.target.value,prior=o.status||"New";e.target.disabled=true;try{await api("status",{orderNumber:o.orderNumber,status:next});o.status=next;render();$("#orderDialog").close();openOrder(o.orderNumber)}catch(err){e.target.value=prior;alert("Could not update status: "+err.message)}finally{e.target.disabled=false}})
 }
 $("#loginForm").addEventListener("submit",login);
 $("#refreshBtn").addEventListener("click",loadOrders);

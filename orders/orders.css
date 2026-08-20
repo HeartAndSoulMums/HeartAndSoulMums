@@ -1,3 +1,4 @@
+[hidden]{display:none!important}
 *{box-sizing:border-box}
 :root{--ink:#241c20;--muted:#786970;--pink:#db4b78;--pink-dark:#ad3158;--cream:#fff9f4;--line:#e9ddd7;--green:#2f6f55;--gold:#b78332}
 body{margin:0;font-family:"DM Sans",sans-serif;color:var(--ink);background:#f7f4f2}

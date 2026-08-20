@@ -1,18 +1,29 @@
-HEART & SOUL — LOGIN REQUEST FIX
+HEART & SOUL — DISPLAY FIX
 
-The storage layer is proven working. This build changes ONLY the owner-dashboard request path.
+We found the real remaining bug.
 
-The dashboard no longer sends the owner password in a custom x-owner-key request header.
-Instead it sends a normal same-origin POST body:
-  { action: "list", ownerKey: "..." }
+The owner login request was succeeding with HTTP 200 and returning the full Jordan Davis order.
+The dashboard was also rendering.
 
-This removes the remaining difference between the successful diagnostic request and the hanging dashboard request.
+But CSS had:
+  .login-shell { display:grid; }
 
-UPLOAD:
-1. Upload ALL ZIP contents to the GitHub repo root.
+That author CSS rule overrode the browser's normal hidden behavior, so:
+  loginView.hidden = true
+
+did NOT actually hide the login screen.
+
+This build adds:
+  [hidden] { display:none !important; }
+
+It also fixes the order-status update action.
+
+STEPS
+1. Upload ALL ZIP contents to GitHub root.
 2. Commit and wait for Netlify.
-3. Confirm /orders/ says BUILD: LOGIN-FIX.
+3. Confirm /orders/ says:
+   BUILD: DISPLAY-FIX
 4. Enter the owner password and click Open Orders.
 
-No environment variable changes.
-The existing saved Jordan Davis order remains in Netlify Blobs and does NOT need to be resubmitted.
+The existing Jordan Davis order is already stored. No new order is needed.
+No environment-variable changes are needed.
