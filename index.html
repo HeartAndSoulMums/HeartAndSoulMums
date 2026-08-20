@@ -11,8 +11,9 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+<div id="announcementBar" class="announcement-bar" hidden></div>
 <header class="site-header">
-  <a class="brand" href="#top"><img src="heart-and-soul-logo.jpeg" class="site-logo" alt="Heart & Soul Signature Mums logo"></a>
+  <a class="brand" href="#top"><img src="heart-and-soul-logo.jpeg" class="site-logo cms-logo" alt="Heart & Soul Signature Mums logo"></a>
   <nav>
     <a href="#packages">Packages</a>
     <a href="#customize">Build Yours</a>
@@ -40,7 +41,7 @@
     </div>
     <div class="hero-art">
       <div class="hero-logo-wrap">
-        <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums">
+        <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="cms-logo">
       </div>
       <div class="floating-note note-one">YOUR SCHOOL.</div>
       <div class="floating-note note-two">YOUR COLORS.</div>
@@ -401,8 +402,22 @@
   </section>
 </main>
 
+
+<section class="owner-contact" id="contact">
+  <span class="eyebrow">QUESTIONS BEFORE ORDERING?</span>
+  <h2 id="contactBusinessName">Heart & Soul Signature Mums</h2>
+  <p id="serviceArea"></p>
+  <div class="contact-links">
+    <a id="phoneLink" hidden></a>
+    <a id="emailLink" hidden></a>
+    <a id="instagramLink" target="_blank" rel="noopener" hidden>Instagram</a>
+    <a id="facebookLink" target="_blank" rel="noopener" hidden>Facebook</a>
+  </div>
+  <p id="pickupInstructions" class="contact-note"></p>
+</section>
+
 <footer>
-  <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="footer-logo">
+  <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="footer-logo cms-logo">
   <p id="footerText">Premium custom homecoming design.</p>
   <p class="footer-small">© 2026 Heart & Soul Signature Mums • Pricing and policies shown are proposed and can be edited before launch.</p>
   <p class="admin-link-wrap"><a href="/admin/" class="admin-link">Site Admin</a></p>

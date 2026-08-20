@@ -4,6 +4,64 @@ let activePromo = null;
 
 const FALLBACK_CONFIG = {"business_name": "Heart & Soul Signature Mums", "hero": {"eyebrow": "PREMIUM • PERSONALIZED • ONE OF A KIND", "title_before": "No two mums", "title_emphasis": "should be the same.", "body": "Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."}, "difference": {"heading": "A wearable keepsake of their high-school experience.", "body": "Names, sports, clubs, jersey numbers, school pride, favorite things, photos, custom ribbon and personal details can all become part of the design.", "tagline": "Don’t see it? Ask us. If we can make it, we’ll put it on your mum."}, "packages": {"Classic": {"price": 195, "label": "TRADITIONAL + PERSONAL", "description": "A smaller, beautifully personalized traditional mum."}, "Signature": {"price": 325, "label": "OUR SIGNATURE EXPERIENCE", "description": "A full-size custom mum with more ribbon, texture and personality."}, "Deluxe": {"price": 450, "label": "BIG TEXAS ENERGY", "description": "Oversized, extra-detailed and built to make people ask where you got it."}, "Showstopper": {"price": 600, "label": "TELL US YOUR VISION", "description": "Our most elaborate custom work. Individually designed and quoted."}}, "pricing": {"sizes": {"Standard": 0, "Large": 50, "XL": 100, "Oversized": 150}, "lengths": {"Standard": 0, "Long": 40, "Floor Length": 75, "Extra Floor Length": 100}, "fullness": {"Classic": 0, "Extra Full": 50, "Extreme": 125}, "addons": {"Light It Up Package": 35, "Bling Package": 40, "Feather Package": 25, "Charm Package": 30, "Photo Package": 35, "Sport Package": 35, "Senior Package": 40, "Sweetheart Package": 35}, "braids": {"None": 0, "Simple specialty braid": 15, "Detailed specialty braid": 25, "Elaborate braid": 35}, "printed_ribbon": {"None": 0, "1 custom ribbon": 20, "2 custom ribbons": 40, "3 custom ribbons": 60}}, "deposit_percent": 50, "referral": {"discount_percent": 10, "reward_orders": 5, "reward_text": "Free Classic mum after 5 fully paid, non-refunded qualifying orders.", "codes": [{"code": "REVIEW10", "student": "Website Review", "school": "Demo", "active": true}]}, "senior": {"heading": "Four years. One final homecoming.", "body": "Senior mums can incorporate their name, Class of 2027, school, mascot, sports, clubs, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."}, "policies": [{"title": "50% Deposit", "body": "A nonrefundable design/material deposit reserves the order. Specialty-material orders may require a larger deposit."}, {"title": "Design Changes", "body": "Changes after materials or design are approved may require a change fee and are subject to material availability."}, {"title": "Rush Orders", "body": "Rush orders may carry an additional fee and are accepted only when schedule and materials allow."}, {"title": "Final Balance", "body": "Remaining balance is due before pickup unless another arrangement has been confirmed."}], "rush": [{"window": "14+ days", "fee": "Standard pricing"}, {"window": "7–13 days", "fee": "+15%"}, {"window": "4–6 days", "fee": "+25%"}, {"window": "72 hours or less", "fee": "+40–50% if accepted"}], "gallery": [], "footer_text": "Premium custom homecoming design."};
 
+
+function normalizeOwnerConfig(cfg){
+  cfg = cfg || {};
+  cfg.branding = cfg.branding || {
+    business_name: cfg.business_name || 'Heart & Soul Signature Mums',
+    logo: '/heart-and-soul-logo.jpeg',
+    tagline: 'Made with Heart. Designed for Spirit.',
+    phone:'', email:'', instagram:'', facebook:'', service_area:'Local pickup'
+  };
+  cfg.ordering = cfg.ordering || {
+    accepting_orders:true,
+    closed_message:'We are currently at capacity for new orders.',
+    deposit_percent: cfg.deposit_percent ?? 50,
+    minimum_lead_days:14,
+    pickup_instructions:''
+  };
+  cfg.announcement = cfg.announcement || {enabled:false,text:''};
+  return cfg;
+}
+
+function applyOwnerControls(){
+  const b=SITE_CONFIG.branding || {};
+  const logo=b.logo || '/heart-and-soul-logo.jpeg';
+  document.querySelectorAll('.cms-logo').forEach(img=>{img.src=logo; img.alt=b.business_name || 'Heart & Soul Signature Mums';});
+  document.title=(b.business_name || 'Heart & Soul Signature Mums') + ' | Custom Homecoming Mums';
+  setText('#contactBusinessName', b.business_name);
+  setText('#serviceArea', b.service_area);
+  setText('#pickupInstructions', SITE_CONFIG.ordering?.pickup_instructions);
+
+  const ann=document.getElementById('announcementBar');
+  if(ann){
+    if(SITE_CONFIG.announcement?.enabled && SITE_CONFIG.announcement?.text){
+      ann.textContent=SITE_CONFIG.announcement.text; ann.hidden=false;
+    } else ann.hidden=true;
+  }
+  const setLink=(id, text, href)=>{
+    const a=document.getElementById(id); if(!a) return;
+    if(text){a.textContent=text; a.href=href; a.hidden=false;} else a.hidden=true;
+  };
+  setLink('phoneLink', b.phone, b.phone ? 'tel:'+b.phone.replace(/[^\d+]/g,'') : '');
+  setLink('emailLink', b.email, b.email ? 'mailto:'+b.email : '');
+  setLink('instagramLink', b.instagram ? 'Instagram' : '', b.instagram || '');
+  setLink('facebookLink', b.facebook ? 'Facebook' : '', b.facebook || '');
+
+  const accepting=SITE_CONFIG.ordering?.accepting_orders !== false;
+  const submit=document.querySelector('.submit-button');
+  if(submit){
+    submit.disabled=!accepting;
+    submit.textContent=accepting ? 'Review Order Request' : 'Orders Temporarily Closed';
+  }
+  const submitCard=document.querySelector('.submit-card');
+  let closed=document.getElementById('closedOrderMessage');
+  if(submitCard && !accepting){
+    if(!closed){closed=document.createElement('p');closed.id='closedOrderMessage';closed.className='helper';submitCard.prepend(closed);}
+    closed.textContent=SITE_CONFIG.ordering?.closed_message || 'We are currently at capacity for new orders.';
+  } else if(closed) closed.remove();
+}
+
 function setText(selector, value){
   const el = document.querySelector(selector);
   if(el && value !== undefined && value !== null) el.textContent = value;
@@ -94,7 +152,7 @@ function applySiteConfig(){
   setText('#seniorHeading',SITE_CONFIG.senior?.heading);
   setText('#seniorBody',SITE_CONFIG.senior?.body);
   setText('#footerText',SITE_CONFIG.footer_text);
-  setText('#depositLabel',`Estimated ${SITE_CONFIG.deposit_percent}% deposit`);
+  setText('#depositLabel',`Estimated ${SITE_CONFIG.ordering?.deposit_percent ?? 50}% deposit`);
   setText('#discountLabel',`Student promo (${SITE_CONFIG.referral.discount_percent}% off)`);
   const helper=document.querySelector('.promo-card .helper');
   if(helper) helper.textContent=`Have a code from one of our selected student representatives? Enter it here for ${SITE_CONFIG.referral.discount_percent}% off your mum order.`;
@@ -109,6 +167,7 @@ function applySiteConfig(){
   applyPolicies();
   applyRush();
   applyGallery();
+  applyOwnerControls();
   PROMO_CODES={};
   (SITE_CONFIG.referral?.codes || []).filter(x=>x.active!==false).forEach(x=>{
     PROMO_CODES[String(x.code).trim().toUpperCase()]={name:x.student,school:x.school};
@@ -176,7 +235,7 @@ function calc(){
   discountRow.hidden = !activePromo;
   discountPrice.textContent = `-${money(discount)}`;
   totalPrice.textContent = money(total);
-  depositPrice.textContent = money(total * (SITE_CONFIG.deposit_percent / 100));
+  depositPrice.textContent = money(total * ((SITE_CONFIG.ordering?.deposit_percent ?? 50) / 100));
   referralNote.hidden = !activePromo;
   referralNote.textContent = activePromo ? `Referral credited to ${activePromo.name}${activePromo.school ? ` • ${activePromo.school}` : ''} • Code ${activePromo.code}` : '';
   quoteNote.textContent = pkg.value === 'Showstopper'
@@ -293,7 +352,7 @@ Preferred contact: ${d.get('contactMethod')}
 SUBTOTAL: ${money(c.subtotal)}
 PROMO DISCOUNT: ${activePromo ? '-' + money(c.discount) : '$0'}
 ESTIMATED TOTAL: ${money(c.total)}
-ESTIMATED ${SITE_CONFIG.deposit_percent}% DEPOSIT: ${money(c.total*(SITE_CONFIG.deposit_percent/100))}
+ESTIMATED ${(SITE_CONFIG.ordering?.deposit_percent ?? 50)}% DEPOSIT: ${money(c.total*((SITE_CONFIG.ordering?.deposit_percent ?? 50)/100))}
 
 Final design and pricing subject to review and approval.`;
 }

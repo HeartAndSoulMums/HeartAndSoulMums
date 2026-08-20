@@ -1,5 +1,37 @@
 {
-  "deposit_percent": 50,
+  "hero": {
+    "eyebrow": "PREMIUM • PERSONALIZED • ONE OF A KIND",
+    "title_before": "No two mums",
+    "title_emphasis": "should be the same.",
+    "body": "Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."
+  },
+  "difference": {
+    "heading": "A wearable keepsake of their high-school experience.",
+    "body": "Names, sports, clubs, jersey numbers, school pride, favorite things, photos, custom ribbon and personal details can all become part of the design.",
+    "tagline": "Don’t see it? Ask us. If we can make it, we’ll put it on your mum."
+  },
+  "packages": {
+    "Classic": {
+      "price": 195,
+      "label": "TRADITIONAL + PERSONAL",
+      "description": "A smaller, beautifully personalized traditional mum."
+    },
+    "Signature": {
+      "price": 325,
+      "label": "OUR SIGNATURE EXPERIENCE",
+      "description": "A full-size custom mum with more ribbon, texture and personality."
+    },
+    "Deluxe": {
+      "price": 450,
+      "label": "BIG TEXAS ENERGY",
+      "description": "Oversized, extra-detailed and built to make people ask where you got it."
+    },
+    "Showstopper": {
+      "price": 600,
+      "label": "TELL US YOUR VISION",
+      "description": "Our most elaborate custom work. Individually designed and quoted."
+    }
+  },
   "pricing": {
     "sizes": {
       "Standard": 0,
@@ -41,28 +73,22 @@
       "3 custom ribbons": 60
     }
   },
-  "business_name": "Heart & Soul Signature Mums",
-  "packages": {
-    "Classic": {
-      "price": 195,
-      "label": "TRADITIONAL + PERSONAL",
-      "description": "A smaller, beautifully personalized traditional mum."
-    },
-    "Signature": {
-      "price": 325,
-      "label": "OUR SIGNATURE EXPERIENCE",
-      "description": "A full-size custom mum with more ribbon, texture and personality."
-    },
-    "Deluxe": {
-      "price": 450,
-      "label": "BIG TEXAS ENERGY",
-      "description": "Oversized, extra-detailed and built to make people ask where you got it."
-    },
-    "Showstopper": {
-      "price": 600,
-      "label": "TELL US YOUR VISION",
-      "description": "Our most elaborate custom work. Individually designed and quoted."
-    }
+  "referral": {
+    "discount_percent": 10,
+    "reward_orders": 5,
+    "reward_text": "Free Classic mum after 5 fully paid, non-refunded qualifying orders.",
+    "codes": [
+      {
+        "code": "REVIEW10",
+        "student": "Website Review",
+        "school": "Demo",
+        "active": true
+      }
+    ]
+  },
+  "senior": {
+    "heading": "Four years. One final homecoming.",
+    "body": "Senior mums can incorporate their name, Class of 2027, school, mascot, sports, clubs, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."
   },
   "policies": [
     {
@@ -82,12 +108,6 @@
       "body": "Remaining balance is due before pickup unless another arrangement has been confirmed."
     }
   ],
-  "senior": {
-    "heading": "Four years. One final homecoming.",
-    "body": "Senior mums can incorporate their name, Class of 2027, school, mascot, sports, clubs, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."
-  },
-  "footer_text": "Premium custom homecoming design.",
-  "gallery": [],
   "rush": [
     {
       "window": "14+ days",
@@ -106,28 +126,27 @@
       "fee": "+40–50% if accepted"
     }
   ],
-  "hero": {
-    "eyebrow": "PREMIUM • PERSONALIZED • ONE OF A KIND",
-    "title_before": "No two mums",
-    "title_emphasis": "should be the same.",
-    "body": "Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."
+  "gallery": [],
+  "footer_text": "Premium custom homecoming design.",
+  "branding": {
+    "business_name": "Heart & Soul Signature Mums",
+    "logo": "/heart-and-soul-logo.jpeg",
+    "tagline": "Made with Heart. Designed for Spirit.",
+    "phone": "",
+    "email": "",
+    "instagram": "",
+    "facebook": "",
+    "service_area": "Local pickup"
   },
-  "difference": {
-    "heading": "A wearable keepsake of their high-school experience.",
-    "body": "Names, sports, clubs, jersey numbers, school pride, favorite things, photos, custom ribbon and personal details can all become part of the design.",
-    "tagline": "Don’t see it? Ask us. If we can make it, we’ll put it on your mum."
+  "announcement": {
+    "enabled": false,
+    "text": "Now accepting custom Homecoming orders!"
   },
-  "referral": {
-    "discount_percent": 10,
-    "reward_orders": 5,
-    "reward_text": "Free Classic mum after 5 fully paid, non-refunded qualifying orders.",
-    "codes": [
-      {
-        "code": "REVIEW10",
-        "student": "Website Review",
-        "school": "Demo",
-        "active": true
-      }
-    ]
+  "ordering": {
+    "accepting_orders": true,
+    "closed_message": "We are currently at capacity for new orders. Please check back soon.",
+    "deposit_percent": 50,
+    "minimum_lead_days": 14,
+    "pickup_instructions": "Pickup details are confirmed after your order is approved."
   }
 }
