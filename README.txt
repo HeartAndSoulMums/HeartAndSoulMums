@@ -35,3 +35,7 @@ STUDENT REFERRAL SYSTEM
 - REVIEW10 is a temporary test code. Remove it before public payment launch.
 - For the "5 completed purchases = free mum" reward, only completed/paid/qualified orders should count.
 - Automatic cross-customer referral counting requires the future payment/order database. The current prototype records the referral on each order so that integration can be added cleanly.
+
+
+Owner Orders Dashboard: /orders/
+See ORDERS-DASHBOARD-SETUP.md for one-time Netlify environment-variable setup.
