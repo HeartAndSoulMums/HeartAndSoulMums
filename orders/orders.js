@@ -1,4 +1,37 @@
-document.getElementById("loginStatus").textContent="Ready. Enter the owner password.";
+document.getElementById("loginStatus").textContent="Checking server setup…";
+
+async function runHealthCheck(){
+  const status=$("#loginStatus");
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),8000);
+    let res;
+    try{
+      res=await fetch("/.netlify/functions/orders?health=1",{cache:"no-store",signal:controller.signal});
+    }finally{
+      clearTimeout(timer);
+    }
+    const data=await res.json();
+    if(!res.ok || !data.ok) throw new Error("Health check failed.");
+
+    const missing=[];
+    if(!data.ownerKeyConfigured) missing.push("OWNER_DASHBOARD_KEY");
+    if(!data.accessTokenConfigured) missing.push("NETLIFY_ACCESS_TOKEN");
+    if(!data.formIdConfigured) missing.push("MUM_ORDER_FORM_ID");
+
+    if(missing.length){
+      status.textContent="Setup issue: missing "+missing.join(", ");
+      status.style.color="#b42318";
+    }else{
+      status.textContent="Server ready. All 3 required environment variables are configured.";
+      status.style.color="#2f6f55";
+    }
+  }catch(err){
+    status.textContent="Could not run server health check: "+(err?.message||"Unknown error");
+    status.style.color="#b42318";
+  }
+}
+
 const $=s=>document.querySelector(s);
 let ownerKey="";
 let orders=[];
@@ -30,13 +63,23 @@ function customerName(o){return o.data.customerName||"Unknown customer"}
 async function api(method="GET",body){
   let res;
   try{
-    res=await fetch("/.netlify/functions/orders",{
-      method,
-      headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},
-      body:body?JSON.stringify(body):undefined,
-      cache:"no-store"
-    });
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      res=await fetch("/.netlify/functions/orders",{
+        method,
+        headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},
+        body:body?JSON.stringify(body):undefined,
+        cache:"no-store",
+        signal:controller.signal
+      });
+    }finally{
+      clearTimeout(timer);
+    }
   }catch(err){
+    if(err && err.name==="AbortError"){
+      throw new Error("The server took too long to respond. Check the dashboard diagnostics below.");
+    }
     throw new Error("Could not reach the server function. Check the latest Netlify deploy.");
   }
 
@@ -228,3 +271,5 @@ $("#lockBtn").addEventListener("click",()=>{ownerKey="";orders=[];$("#dashboardV
 $("#searchInput").addEventListener("input",render);
 $("#statusFilter").addEventListener("change",render);
 $("#closeDialog").addEventListener("click",()=>$("#orderDialog").close());
+
+runHealthCheck();

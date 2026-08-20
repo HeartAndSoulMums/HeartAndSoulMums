@@ -22,9 +22,17 @@ function isAuthorized(event) {
 async function netlifyFetch(path) {
   const token = process.env.NETLIFY_ACCESS_TOKEN;
   if (!token) throw new Error("NETLIFY_ACCESS_TOKEN is not configured.");
-  const response = await fetch(`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  let response;
+  try {
+    response = await fetch(`${API}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`Netlify API ${response.status}: ${text.slice(0, 300)}`);
@@ -61,6 +69,21 @@ export default async (request, context) => {
   const event = {
     headers: Object.fromEntries(request.headers.entries())
   };
+
+  const url = new URL(request.url);
+
+  if (request.method === "GET" && url.searchParams.get("health") === "1") {
+    return new Response(JSON.stringify({
+      ok: true,
+      ownerKeyConfigured: Boolean(process.env.OWNER_DASHBOARD_KEY),
+      accessTokenConfigured: Boolean(process.env.NETLIFY_ACCESS_TOKEN),
+      formIdConfigured: Boolean(process.env.MUM_ORDER_FORM_ID),
+      siteIdConfigured: Boolean(process.env.SITE_ID)
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+    });
+  }
 
   if (!isAuthorized(event)) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
