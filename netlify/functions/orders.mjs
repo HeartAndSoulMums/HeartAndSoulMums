@@ -29,11 +29,7 @@ function store(){
 }
 
 async function readJSON(store, key){
-  const entry = await store.get(key, {type:"json", consistency:"strong"});
-  if(entry === null) return null;
-  // Current Netlify Blobs returns { data, etag, metadata }.
-  // Keep a fallback for runtimes that return the data directly.
-  return Object.prototype.hasOwnProperty.call(entry, "data") ? entry.data : entry;
+  return await store.get(key, {type:"json", consistency:"strong"});
 }
 
 export default async(request)=>{
@@ -66,10 +62,10 @@ export default async(request)=>{
         ok:true,
         blobCount:blobs.length,
         firstRead,
-        build:"BLOB-READ-FIX"
+        build:"JSON-READ-FIX"
       });
     }catch(err){
-      return respond(500,{ok:false,error:err?.message||"Storage test failed.",build:"BLOB-READ-FIX"});
+      return respond(500,{ok:false,error:err?.message||"Storage test failed.",build:"JSON-READ-FIX"});
     }
   }
 

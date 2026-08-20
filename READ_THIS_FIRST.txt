@@ -1,26 +1,31 @@
-HEART & SOUL — BLOB READ FIX
+HEART & SOUL — JSON READ FIX
 
-We isolated the issue:
-- Netlify Blobs LIST works.
-- There is already 1 saved order.
-- The previous code treated `store.get()` as if it returned the JSON value directly.
+We isolated the exact issue.
 
-Current Netlify Blobs returns an entry object whose `.data` property contains the
-requested JSON data. This build unwraps `.data` correctly.
+Netlify Blobs:
+- `store.get(key, { type: "json" })` returns the parsed JSON object DIRECTLY.
+- `getWithMetadata()` is the method that returns `{ data, etag, metadata }`.
+
+The previous build incorrectly tried to read `.data`, which stripped the outer
+order object and caused orderNumber/studentName to become null.
 
 STEPS
 1. Upload ALL contents of this ZIP to the ROOT of GitHub.
 2. Commit and wait for Netlify to publish.
 3. Confirm /orders/ says:
-   BUILD: BLOB-READ-FIX
+   BUILD: JSON-READ-FIX
 
 4. Open:
 https://heartandsoulmums.netlify.app/.netlify/functions/orders?storageTest=1
 
-A successful response should now include something like:
+Expected:
 "blobCount":1,
-"firstRead":{"ok":true,"orderNumber":"HS-...","studentName":"..."}
+"firstRead":{
+  "ok":true,
+  "orderNumber":"HS-...",
+  "studentName":"..."
+}
 
-5. Then open /orders/, enter the owner password, and the saved order should load.
+5. Then open /orders/ and enter the owner password.
 
 No environment-variable changes are required.
