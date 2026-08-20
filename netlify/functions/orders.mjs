@@ -25,7 +25,15 @@ async function deadline(promise,ms,label){
   }
 }
 function store(){
-  return getStore({name:"heart-and-soul-orders",consistency:"strong"});
+  return getStore("heart-and-soul-orders");
+}
+
+async function readJSON(store, key){
+  const entry = await store.get(key, {type:"json", consistency:"strong"});
+  if(entry === null) return null;
+  // Current Netlify Blobs returns { data, etag, metadata }.
+  // Keep a fallback for runtimes that return the data directly.
+  return Object.prototype.hasOwnProperty.call(entry, "data") ? entry.data : entry;
 }
 
 export default async(request)=>{
@@ -44,9 +52,24 @@ export default async(request)=>{
     try{
       const s=store();
       const result=await deadline(s.list({prefix:"order:"}),6000,"Storage list");
-      return respond(200,{ok:true,blobCount:result.blobs?.length||0,build:"STORAGE-FIX-LIST-PREFIX"});
+      const blobs=result.blobs||[];
+      let firstRead=null;
+      if(blobs.length){
+        const value=await deadline(readJSON(s,blobs[0].key),6000,"Storage read");
+        firstRead=value ? {
+          ok:true,
+          orderNumber:value.orderNumber||null,
+          studentName:value.data?.studentName||null
+        } : {ok:false};
+      }
+      return respond(200,{
+        ok:true,
+        blobCount:blobs.length,
+        firstRead,
+        build:"BLOB-READ-FIX"
+      });
     }catch(err){
-      return respond(500,{ok:false,error:err?.message||"Storage test failed."});
+      return respond(500,{ok:false,error:err?.message||"Storage test failed.",build:"BLOB-READ-FIX"});
     }
   }
 
@@ -64,7 +87,7 @@ export default async(request)=>{
         const batch=blobs.slice(i,i+20);
         const values=await deadline(
           Promise.all(batch.map(async b=>{
-            try{return await s.get(b.key,{type:"json"});}catch{return null;}
+            try{return await readJSON(s,b.key);}catch{return null;}
           })),
           7000,
           "Order read"
@@ -84,7 +107,7 @@ export default async(request)=>{
       if(!orderNumber||!allowed.includes(status))return respond(400,{error:"Invalid status update."});
 
       const key=`order:${orderNumber}`;
-      const order=await deadline(s.get(key,{type:"json"}),6000,"Order status read");
+      const order=await deadline(readJSON(s,key),6000,"Order status read");
       if(!order)return respond(404,{error:"Order not found."});
 
       order.status=status;

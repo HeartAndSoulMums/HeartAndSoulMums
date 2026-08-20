@@ -52,7 +52,7 @@ export default async (request) => {
       }
     };
 
-    const store=getStore({name:"heart-and-soul-orders",consistency:"strong"});
+    const store=getStore("heart-and-soul-orders");
     await store.setJSON(`order:${orderNumber}`,order);
 
     return respond(200,{ok:true,orderNumber});

@@ -1,28 +1,26 @@
-HEART & SOUL — ORDERS STORAGE FIX
+HEART & SOUL — BLOB READ FIX
 
-This build removes the custom `order-index` object.
+We isolated the issue:
+- Netlify Blobs LIST works.
+- There is already 1 saved order.
+- The previous code treated `store.get()` as if it returned the JSON value directly.
 
-Orders are now:
-- saved as individual Netlify Blobs using keys like `order:HS-...`
-- discovered using Netlify Blobs' native `list({ prefix: "order:" })`
-- read with strong consistency so new orders appear immediately
-- protected by the existing OWNER_DASHBOARD_KEY
+Current Netlify Blobs returns an entry object whose `.data` property contains the
+requested JSON data. This build unwraps `.data` correctly.
 
-UPLOAD
-Upload ALL contents of this ZIP to the ROOT of your GitHub repo and commit.
+STEPS
+1. Upload ALL contents of this ZIP to the ROOT of GitHub.
+2. Commit and wait for Netlify to publish.
+3. Confirm /orders/ says:
+   BUILD: BLOB-READ-FIX
 
-After Netlify publishes, /orders/ must display:
-BUILD: ORDERS-STORAGE-FIX
-
-FIRST TEST THE STORAGE ENDPOINT
-Open:
+4. Open:
 https://heartandsoulmums.netlify.app/.netlify/functions/orders?storageTest=1
 
-Expected:
-{"ok":true,"blobCount":0,...}
-(or a higher blobCount if a new private-store order already exists)
+A successful response should now include something like:
+"blobCount":1,
+"firstRead":{"ok":true,"orderNumber":"HS-...","studentName":"..."}
 
-Then submit ONE NEW order from the normal customer site and open /orders/.
+5. Then open /orders/, enter the owner password, and the saved order should load.
 
-No environment-variable changes are needed.
-NETLIFY_ACCESS_TOKEN and MUM_ORDER_FORM_ID are still not used by this dashboard.
+No environment-variable changes are required.
