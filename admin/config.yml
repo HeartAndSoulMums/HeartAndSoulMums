@@ -1,0 +1,156 @@
+# IMPORTANT: Replace YOUR_GITHUB_USERNAME below after you create the GitHub repository.
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/heart-and-soul-mums
+  branch: main
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "website"
+    label: "Website"
+    files:
+      - name: "site_settings"
+        label: "Heart & Soul Website Settings"
+        file: "content/site.json"
+        format: "json"
+        fields:
+          - { label: "Business name", name: "business_name", widget: "string" }
+          - label: "Homepage hero"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Small heading", name: "eyebrow", widget: "string" }
+              - { label: "Main title", name: "title_before", widget: "string" }
+              - { label: "Highlighted title", name: "title_emphasis", widget: "string" }
+              - { label: "Intro text", name: "body", widget: "text" }
+          - label: "Why Heart & Soul"
+            name: "difference"
+            widget: "object"
+            fields:
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Text", name: "body", widget: "text" }
+              - { label: "Tagline", name: "tagline", widget: "string" }
+          - label: "Mum packages"
+            name: "packages"
+            widget: "object"
+            fields:
+              - label: "Classic"
+                name: "Classic"
+                widget: "object"
+                fields: &package_fields
+                  - { label: "Starting price", name: "price", widget: "number", value_type: "int", min: 0 }
+                  - { label: "Small label", name: "label", widget: "string" }
+                  - { label: "Description", name: "description", widget: "text" }
+              - label: "Signature"
+                name: "Signature"
+                widget: "object"
+                fields: *package_fields
+              - label: "Deluxe"
+                name: "Deluxe"
+                widget: "object"
+                fields: *package_fields
+              - label: "Showstopper"
+                name: "Showstopper"
+                widget: "object"
+                fields: *package_fields
+          - label: "Pricing options"
+            name: "pricing"
+            widget: "object"
+            fields:
+              - label: "Size prices"
+                name: "sizes"
+                widget: "object"
+                fields:
+                  - { label: "Standard", name: "Standard", widget: "number", value_type: "int" }
+                  - { label: "Large", name: "Large", widget: "number", value_type: "int" }
+                  - { label: "XL", name: "XL", widget: "number", value_type: "int" }
+                  - { label: "Oversized", name: "Oversized", widget: "number", value_type: "int" }
+              - label: "Length prices"
+                name: "lengths"
+                widget: "object"
+                fields:
+                  - { label: "Standard", name: "Standard", widget: "number", value_type: "int" }
+                  - { label: "Long", name: "Long", widget: "number", value_type: "int" }
+                  - { label: "Floor Length", name: "Floor Length", widget: "number", value_type: "int" }
+                  - { label: "Extra Floor Length", name: "Extra Floor Length", widget: "number", value_type: "int" }
+              - label: "Fullness prices"
+                name: "fullness"
+                widget: "object"
+                fields:
+                  - { label: "Classic", name: "Classic", widget: "number", value_type: "int" }
+                  - { label: "Extra Full", name: "Extra Full", widget: "number", value_type: "int" }
+                  - { label: "Extreme", name: "Extreme", widget: "number", value_type: "int" }
+              - label: "Premium add-on prices"
+                name: "addons"
+                widget: "object"
+                fields:
+                  - { label: "Light It Up", name: "Light It Up Package", widget: "number", value_type: "int" }
+                  - { label: "Bling Package", name: "Bling Package", widget: "number", value_type: "int" }
+                  - { label: "Feather Package", name: "Feather Package", widget: "number", value_type: "int" }
+                  - { label: "Charm Package", name: "Charm Package", widget: "number", value_type: "int" }
+                  - { label: "Photo Package", name: "Photo Package", widget: "number", value_type: "int" }
+                  - { label: "Sport Package", name: "Sport Package", widget: "number", value_type: "int" }
+                  - { label: "Senior Package", name: "Senior Package", widget: "number", value_type: "int" }
+                  - { label: "Sweetheart Package", name: "Sweetheart Package", widget: "number", value_type: "int" }
+              - label: "Braid prices"
+                name: "braids"
+                widget: "object"
+                fields:
+                  - { label: "None", name: "None", widget: "number", value_type: "int" }
+                  - { label: "Simple specialty braid", name: "Simple specialty braid", widget: "number", value_type: "int" }
+                  - { label: "Detailed specialty braid", name: "Detailed specialty braid", widget: "number", value_type: "int" }
+                  - { label: "Elaborate braid", name: "Elaborate braid", widget: "number", value_type: "int" }
+              - label: "Custom printed ribbon prices"
+                name: "printed_ribbon"
+                widget: "object"
+                fields:
+                  - { label: "None", name: "None", widget: "number", value_type: "int" }
+                  - { label: "1 custom ribbon", name: "1 custom ribbon", widget: "number", value_type: "int" }
+                  - { label: "2 custom ribbons", name: "2 custom ribbons", widget: "number", value_type: "int" }
+                  - { label: "3 custom ribbons", name: "3 custom ribbons", widget: "number", value_type: "int" }
+          - { label: "Deposit percent", name: "deposit_percent", widget: "number", value_type: "int", min: 0, max: 100 }
+          - label: "Student referral system"
+            name: "referral"
+            widget: "object"
+            fields:
+              - { label: "Customer discount percent", name: "discount_percent", widget: "number", value_type: "int", min: 0, max: 100 }
+              - { label: "Paid orders needed for reward", name: "reward_orders", widget: "number", value_type: "int", min: 1 }
+              - { label: "Reward description", name: "reward_text", widget: "string" }
+              - label: "Approved promo codes"
+                name: "codes"
+                widget: "list"
+                summary: "{{fields.code}} — {{fields.student}} ({{fields.school}})"
+                fields:
+                  - { label: "Code", name: "code", widget: "string", hint: "Example: MADISON10" }
+                  - { label: "Student", name: "student", widget: "string" }
+                  - { label: "School", name: "school", widget: "string" }
+                  - { label: "Active", name: "active", widget: "boolean", default: true }
+          - label: "Senior section"
+            name: "senior"
+            widget: "object"
+            fields:
+              - { label: "Heading", name: "heading", widget: "string" }
+              - { label: "Text", name: "body", widget: "text" }
+          - label: "Policies"
+            name: "policies"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Policy text", name: "body", widget: "text" }
+          - label: "Rush pricing"
+            name: "rush"
+            widget: "list"
+            fields:
+              - { label: "Time window", name: "window", widget: "string" }
+              - { label: "Fee", name: "fee", widget: "string" }
+          - label: "Photo gallery"
+            name: "gallery"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Photo", name: "image", widget: "image" }
+              - { label: "Alt text", name: "alt", widget: "string", required: false }
+              - { label: "Caption", name: "caption", widget: "string", required: false }
+          - { label: "Footer text", name: "footer_text", widget: "string" }
