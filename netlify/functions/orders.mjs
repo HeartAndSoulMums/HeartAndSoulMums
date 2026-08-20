@@ -42,6 +42,10 @@ export default async (request) => {
     return response(401, { error: "Unauthorized" });
   }
 
+  if (request.method === "GET" && url.searchParams.get("ping") === "1") {
+    return response(200, { ok: true, authenticated: true });
+  }
+
   if (request.method !== "GET") {
     return response(405, { error: "Only order viewing is enabled in this version." });
   }

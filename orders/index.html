@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Orders | Heart & Soul Signature Mums</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +19,7 @@
         <img src="/heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums">
         <span class="eyebrow">OWNER ACCESS</span>
         <h1>Orders Dashboard</h1>
-        <p>Enter the private owner dashboard password to view customer orders.</p>
+        <p>Enter the private owner dashboard password to view customer orders.</p><div style="font-size:10px;color:#9a8e93;margin:-5px 0 16px;letter-spacing:.06em">BUILD: ORDERS-NOCACHE-0820</div>
         <form id="loginForm">
           <label>Owner password
             <input id="ownerKey" type="password" autocomplete="current-password" required>
@@ -79,6 +82,285 @@
     <div id="orderDetail"></div>
   </dialog>
 
-  <script src="/orders/orders.js?v=READABLE1"></script>
+  <script>
+document.getElementById("loginStatus").textContent="Checking server setup…";
+
+async function runHealthCheck(){
+  const status=$("#loginStatus");
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),8000);
+    let res;
+    try{
+      res=await fetch("/.netlify/functions/orders?health=1",{cache:"no-store",signal:controller.signal});
+    }finally{
+      clearTimeout(timer);
+    }
+    const data=await res.json();
+    if(!res.ok || !data.ok) throw new Error("Health check failed.");
+
+    const missing=[];
+    if(!data.ownerKeyConfigured) missing.push("OWNER_DASHBOARD_KEY");
+    if(!data.accessTokenConfigured) missing.push("NETLIFY_ACCESS_TOKEN");
+    if(!data.formIdConfigured) missing.push("MUM_ORDER_FORM_ID");
+
+    if(missing.length){
+      status.textContent="Setup issue: missing "+missing.join(", ");
+      status.style.color="#b42318";
+    }else{
+      status.textContent="Server ready. All 3 required environment variables are configured.";
+      status.style.color="#2f6f55";
+    }
+  }catch(err){
+    status.textContent="Could not run server health check: "+(err?.message||"Unknown error");
+    status.style.color="#b42318";
+  }
+}
+
+const $=s=>document.querySelector(s);
+let ownerKey="";
+let orders=[];
+let filtered=[];
+const STATUS=["New","Design Approved","In Production","Ready for Pickup","Completed","Cancelled"];
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+function money(v){const n=Number(v||0);return n.toLocaleString("en-US",{style:"currency",currency:"USD"})}
+function val(d,k){const v=d?.[k];return v===null||v===undefined||v===""?"—":v}
+function dateOnly(s){if(!s||s==="—")return "—";const p=String(s).split("-").map(Number);if(p.length!==3)return s;return new Date(Date.UTC(p[0],p[1]-1,p[2])).toLocaleDateString("en-US",{timeZone:"UTC",month:"long",day:"numeric",year:"numeric"})}
+function dateTime(s){if(!s)return "—";return new Date(s).toLocaleString()}
+function phoneDisplay(s){const n=String(s||"").replace(/\D/g,"");return n.length===10?`(${n.slice(0,3)}) ${n.slice(3,6)}-${n.slice(6)}`:s||"—"}
+function statusClass(s){return "status-"+String(s).replace(/\s+/g,"-")}
+function colorName(name,hex){
+  if(name&&String(name).trim()) return String(name).trim();
+  const map={"#ffffff":"White","#000000":"Black","#e64b7d":"Pink","#ff0000":"Red","#0000ff":"Blue","#000080":"Navy Blue","#800000":"Maroon","#008000":"Green","#800080":"Purple","#ffd700":"Gold","#c0c0c0":"Silver","#ffa500":"Orange","#a52a2a":"Brown"};
+  return map[String(hex||"").toLowerCase()]||"Custom color";
+}
+function field(label,value){return `<div class="field"><span>${esc(label)}</span><strong>${esc(value||"—")}</strong></div>`}
+function parseAddons(v){
+  if(Array.isArray(v)) return v;
+  try{return JSON.parse(v||"[]")}catch{return v?[String(v)]:[]}
+}
+function orderNumber(o){return o.data.orderNumber||o.id.slice(0,8).toUpperCase()}
+function orderTotal(o){return Number(o.data.estimatedTotal||0)}
+function studentName(o){return o.data.studentName||"Unnamed student"}
+function customerName(o){return o.data.customerName||"Unknown customer"}
+
+async function api(method="GET",body){
+  let res;
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),10000);
+    try{
+      res=await fetch("/.netlify/functions/orders",{
+        method,
+        headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},
+        body:body?JSON.stringify(body):undefined,
+        cache:"no-store",
+        signal:controller.signal
+      });
+    }finally{
+      clearTimeout(timer);
+    }
+  }catch(err){
+    if(err && err.name==="AbortError"){
+      throw new Error("The server took too long to respond. Check the dashboard diagnostics below.");
+    }
+    throw new Error("Could not reach the server function. Check the latest Netlify deploy.");
+  }
+
+  const raw=await res.text();
+  let data={};
+  try{ data=raw ? JSON.parse(raw) : {}; }
+  catch{
+    throw new Error(`Server returned an unexpected response (${res.status}).`);
+  }
+
+  if(!res.ok){
+    if(res.status===401) throw new Error("Unauthorized");
+    throw new Error(data.error || `Server error (${res.status})`);
+  }
+  return data;
+}
+
+async function login(e){
+  e.preventDefault();
+
+  const btn=$("#openOrdersBtn");
+  const status=$("#loginStatus");
+  const error=$("#loginError");
+
+  ownerKey=$("#ownerKey").value.trim();
+  error.textContent="";
+
+  if(!ownerKey){
+    error.textContent="Enter the owner dashboard password.";
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent="Opening…";
+  status.textContent="Retrieving customer orders…";
+  status.style.color="";
+
+  try{
+    const timeoutPromise=new Promise((_,reject)=>
+      setTimeout(()=>reject(new Error("Dashboard request timed out after 12 seconds.")),12000)
+    );
+    const data=await Promise.race([api(),timeoutPromise]);
+
+    orders=data.orders||[];
+    $("#lastUpdated").textContent=`Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    render();
+    $("#loginView").hidden=true;
+    $("#dashboardView").hidden=false;
+  }catch(err){
+    console.error("Orders dashboard login error:",err);
+    let message=err?.message || "Could not connect to the Orders Dashboard.";
+    if(message==="Unauthorized") message="Incorrect owner password.";
+    error.textContent=message;
+    status.textContent="Could not open the dashboard.";
+    status.style.color="#b42318";
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Open Orders";
+  }
+}
+async function loadOrders(){
+  $("#loadingState").hidden=false;$("#errorState").hidden=true;
+  try{
+    const data=await api();
+    orders=data.orders||[];
+    $("#lastUpdated").textContent=`Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    render();
+  }catch(err){
+    $("#errorState").textContent=err.message;
+    $("#errorState").hidden=false;
+    throw err;
+  }finally{$("#loadingState").hidden=true}
+}
+function renderStats(){
+  const counts=Object.fromEntries(STATUS.map(s=>[s,orders.filter(o=>o.status===s).length]));
+  const active=counts["New"]+counts["Design Approved"]+counts["In Production"]+counts["Ready for Pickup"];
+  $("#stats").innerHTML=[
+    ["New",counts["New"]],["Active",active],["In Production",counts["In Production"]],["Ready",counts["Ready for Pickup"]],["Completed",counts["Completed"]]
+  ].map(([l,n])=>`<div class="stat"><span>${esc(l)}</span><strong>${n}</strong></div>`).join("");
+}
+function render(){
+  renderStats();
+  const q=$("#searchInput").value.trim().toLowerCase();
+  const sf=$("#statusFilter").value;
+  filtered=orders.filter(o=>{
+    const d=o.data;
+    const hay=[orderNumber(o),studentName(o),customerName(o),d.school,d.promoCodeApplied,d.email,d.phone].join(" ").toLowerCase();
+    return (!q||hay.includes(q))&&(sf==="All"||o.status===sf);
+  });
+  $("#emptyState").hidden=filtered.length!==0;
+  $("#ordersList").innerHTML=filtered.map(o=>{
+    const d=o.data;
+    return `<article class="order-row" data-id="${esc(o.id)}" tabindex="0">
+      <div class="order-id"><strong>${esc(orderNumber(o))}</strong><span>${esc(dateTime(o.created_at))}</span></div>
+      <div class="customer"><strong>${esc(studentName(o))}</strong><span>Customer: ${esc(customerName(o))}</span></div>
+      <div class="school"><strong>${esc(val(d,"school"))}</strong><span>${esc(val(d,"grade"))}</span></div>
+      <div class="amount">${money(orderTotal(o))}</div>
+      <div class="status-wrap"><span class="status-pill ${statusClass(o.status)}">${esc(o.status)}</span></div>
+      <div class="arrow">›</div>
+    </article>`;
+  }).join("");
+  document.querySelectorAll(".order-row").forEach(el=>{
+    const open=()=>openOrder(el.dataset.id);
+    el.addEventListener("click",open);
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}});
+  });
+}
+function openOrder(id){
+  const o=orders.find(x=>x.id===id); if(!o)return;
+  const d=o.data, addons=parseAddons(d.addons);
+  const phex=d.primaryColor||"#ffffff", shex=d.secondaryColor||"#ffffff";
+  const pname=colorName(d.primaryColorName,phex), sname=colorName(d.secondaryColorName,shex);
+  const promo=d.promoCodeApplied||d.promoCode||"";
+  const phone=String(d.phone||"").replace(/\D/g,"");
+  const detail=`<div class="detail">
+    <div class="detail-top">
+      <div><span class="eyebrow">ORDER ${esc(orderNumber(o))}</span><h2>${esc(studentName(o))}</h2><div class="detail-sub">${esc(val(d,"school"))} • ${esc(val(d,"grade"))} • Homecoming ${esc(dateOnly(d.homecomingDate))}</div></div>
+      <span class="status-pill ${statusClass(o.status)}">${esc(o.status)}</span>
+    </div>
+    <div class="detail-actions">
+      ${phone?`<a href="tel:${esc(phone)}">Call ${esc(phoneDisplay(d.phone))}</a><a href="sms:${esc(phone)}">Text Customer</a>`:""}
+      ${d.email?`<a href="mailto:${esc(d.email)}">Email Customer</a>`:""}
+      <button class="print" id="printOrder">Print Order Sheet</button>
+    </div>
+    <div class="detail-layout">
+      <div class="detail-main">
+        <section class="card"><h3>Student + School</h3><div class="field-grid">
+          ${field("Student",d.studentName)}${field("Nickname",d.nickname)}${field("School",d.school)}${field("Mascot",d.mascot)}
+          ${field("Grade",d.grade)}${field("Graduation year",d.gradYear)}${field("Jersey / player #",d.number)}${field("Homecoming",dateOnly(d.homecomingDate))}
+        </div></section>
+        <section class="card"><h3>Mum Build</h3><div class="field-grid">
+          ${field("Package",d.package)}${field("Size",d.size)}${field("Length",d.length)}${field("Fullness",d.fullness)}${field("Style",d.style)}
+        </div></section>
+        <section class="card"><h3>Colors</h3><div class="colors">
+          <div class="color-chip"><span class="swatch" style="background:${esc(phex)}"></span><strong>Primary:</strong> ${esc(pname)} • <code>${esc(String(phex).toUpperCase())}</code></div>
+          <div class="color-chip"><span class="swatch" style="background:${esc(shex)}"></span><strong>Secondary:</strong> ${esc(sname)} • <code>${esc(String(shex).toUpperCase())}</code></div>
+          <div class="color-chip"><strong>Accent:</strong> ${esc(d.accentColor||"None")}</div>
+        </div></section>
+        <section class="card"><h3>Activities + Personal Details</h3><div class="copytext">Sports / clubs / activities: ${esc(d.activities||"—")}
+
+Favorite things: ${esc(d.favorites||"—")}
+Favorite song: ${esc(d.song||"—")}
+Bible verse / quote: ${esc(d.quote||"—")}
+Special date / relationship detail: ${esc(d.specialDate||"—")}</div></section>
+        <section class="card"><h3>Upgrades</h3><div class="copytext">${addons.length?addons.map(x=>"• "+x).join("\n"):"No premium packages selected."}
+
+Specialty braid: ${esc(d.braid||"None")}
+Custom printed ribbon: ${esc(d.printedRibbon||"None")}
+Printed wording: ${esc(d.ribbonText||"—")}</div></section>
+        <section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div></section>
+      </div>
+      <aside class="detail-side">
+        <section class="card"><h3>Order Status</h3>
+          <select class="status-select" id="detailStatus">${STATUS.map(s=>`<option ${s===o.status?"selected":""}>${esc(s)}</option>`).join("")}</select>
+        </section>
+        <section class="card"><h3>Customer</h3><div class="copytext"><strong>${esc(customerName(o))}</strong>
+${esc(phoneDisplay(d.phone))}
+${esc(d.email||"—")}
+Prefers: ${esc(d.contactMethod||"—")}</div></section>
+        <section class="card"><h3>Pricing</h3>
+          <div class="price-line"><span>Subtotal</span><strong>${money(Number(d.estimatedTotal||0)+(Number(d.promoDiscount||0)))}</strong></div>
+          <div class="price-line"><span>Promo discount</span><strong>${d.promoCodeApplied?esc(d.promoCodeApplied):"None"}</strong></div>
+          <div class="price-line total"><span>Order total</span><strong>${money(orderTotal(o))}</strong></div>
+          <div class="price-line"><span>Payment</span><strong>Pending checkout</strong></div>
+        </section>
+        ${promo?`<section class="card referral"><h3>Student Referral</h3><div class="copytext">Code: ${esc(promo)}
+Student: ${esc(d.referralStudent||"—")}
+School: ${esc(d.referralSchool||"—")}</div></section>`:""}
+        <section class="card"><h3>Submission</h3><div class="copytext">Received: ${esc(dateTime(o.created_at))}
+Order #: ${esc(orderNumber(o))}</div></section>
+      </aside>
+    </div>
+  </div>`;
+  $("#orderDetail").innerHTML=detail;
+  $("#orderDialog").showModal();
+  $("#printOrder").addEventListener("click",()=>window.print());
+  $("#detailStatus").addEventListener("change",e=>{
+    const next=e.target.value;
+    o.status=next;
+    render();
+    const note=document.createElement("div");
+    note.style.cssText="margin-top:10px;font-size:11px;color:#786970;line-height:1.4";
+    note.textContent="Status changes are temporary in this troubleshooting build and reset on refresh.";
+    e.target.parentElement.appendChild(note);
+  });
+}
+
+$("#loginForm").addEventListener("submit",login);
+$("#refreshBtn").addEventListener("click",()=>loadOrders().catch(()=>{}));
+$("#lockBtn").addEventListener("click",()=>{ownerKey="";orders=[];$("#dashboardView").hidden=true;$("#loginView").hidden=false;$("#ownerKey").value=""});
+$("#searchInput").addEventListener("input",render);
+$("#statusFilter").addEventListener("change",render);
+$("#closeDialog").addEventListener("click",()=>$("#orderDialog").close());
+
+runHealthCheck();
+
+</script>
 </body>
 </html>
