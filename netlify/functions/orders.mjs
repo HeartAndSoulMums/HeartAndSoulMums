@@ -1,66 +1,101 @@
 import { getStore } from "@netlify/blobs";
 
-function respond(status, body) {
-  return new Response(JSON.stringify(body), {
+function respond(status,body){
+  return new Response(JSON.stringify(body),{
     status,
-    headers: {"Content-Type":"application/json","Cache-Control":"no-store"}
+    headers:{"Content-Type":"application/json","Cache-Control":"no-store"}
   });
 }
-function authorized(request) {
-  const expected = process.env.OWNER_DASHBOARD_KEY || "";
-  const supplied = request.headers.get("x-owner-key") || "";
-  return Boolean(expected && supplied && expected === supplied);
+function authorized(request){
+  const expected=process.env.OWNER_DASHBOARD_KEY||"";
+  const supplied=request.headers.get("x-owner-key")||"";
+  return Boolean(expected&&supplied&&expected===supplied);
+}
+async function deadline(promise,ms,label){
+  let timer;
+  try{
+    return await Promise.race([
+      promise,
+      new Promise((_,reject)=>{
+        timer=setTimeout(()=>reject(new Error(`${label} timed out after ${ms/1000} seconds.`)),ms);
+      })
+    ]);
+  }finally{
+    if(timer)clearTimeout(timer);
+  }
+}
+function store(){
+  return getStore({name:"heart-and-soul-orders",consistency:"strong"});
 }
 
-export default async (request) => {
-  const url = new URL(request.url);
+export default async(request)=>{
+  const url=new URL(request.url);
 
-  if (request.method === "GET" && url.searchParams.get("health") === "1") {
+  if(request.method==="GET"&&url.searchParams.get("health")==="1"){
     return respond(200,{
       ok:true,
       ownerKeyConfigured:Boolean(process.env.OWNER_DASHBOARD_KEY),
-      storage:"Netlify Blobs"
+      storage:"Netlify Blobs",
+      build:"STORAGE-FIX-LIST-PREFIX"
     });
   }
 
-  if (!authorized(request)) return respond(401,{error:"Unauthorized"});
+  if(request.method==="GET"&&url.searchParams.get("storageTest")==="1"){
+    try{
+      const s=store();
+      const result=await deadline(s.list({prefix:"order:"}),6000,"Storage list");
+      return respond(200,{ok:true,blobCount:result.blobs?.length||0,build:"STORAGE-FIX-LIST-PREFIX"});
+    }catch(err){
+      return respond(500,{ok:false,error:err?.message||"Storage test failed."});
+    }
+  }
 
-  const store = getStore("heart-and-soul-orders");
+  if(!authorized(request))return respond(401,{error:"Unauthorized"});
+  const s=store();
 
-  try {
-    if (request.method === "GET") {
-      let index = [];
-      try {
-        index = await store.get("order-index",{type:"json"}) || [];
-        if (!Array.isArray(index)) index = [];
-      } catch {}
+  try{
+    if(request.method==="GET"){
+      const listed=await deadline(s.list({prefix:"order:"}),6000,"Order list");
+      const blobs=(listed.blobs||[]).slice(0,500);
 
-      const orders = (await Promise.all(index.slice(0,500).map(async orderNumber=>{
-        try { return await store.get(`order:${orderNumber}`,{type:"json"}); }
-        catch { return null; }
-      }))).filter(Boolean).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+      const results=[];
+      // Read sequentially in small batches to avoid overwhelming storage.
+      for(let i=0;i<blobs.length;i+=20){
+        const batch=blobs.slice(i,i+20);
+        const values=await deadline(
+          Promise.all(batch.map(async b=>{
+            try{return await s.get(b.key,{type:"json"});}catch{return null;}
+          })),
+          7000,
+          "Order read"
+        );
+        results.push(...values.filter(Boolean));
+      }
 
-      return respond(200,{orders});
+      results.sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+      return respond(200,{orders:results});
     }
 
-    if (request.method === "POST") {
-      const body = await request.json();
-      const orderNumber = String(body.orderNumber||"").trim();
-      const status = String(body.status||"").trim();
-      const allowed = ["New","Design Approved","In Production","Ready for Pickup","Completed","Cancelled"];
-      if (!orderNumber || !allowed.includes(status)) return respond(400,{error:"Invalid status update."});
+    if(request.method==="POST"){
+      const body=await request.json();
+      const orderNumber=String(body.orderNumber||"").trim();
+      const status=String(body.status||"").trim();
+      const allowed=["New","Design Approved","In Production","Ready for Pickup","Completed","Cancelled"];
+      if(!orderNumber||!allowed.includes(status))return respond(400,{error:"Invalid status update."});
 
-      const order = await store.get(`order:${orderNumber}`,{type:"json"});
-      if (!order) return respond(404,{error:"Order not found."});
-      order.status = status;
-      order.statusUpdatedAt = new Date().toISOString();
-      await store.setJSON(`order:${orderNumber}`,order);
+      const key=`order:${orderNumber}`;
+      const order=await deadline(s.get(key,{type:"json"}),6000,"Order status read");
+      if(!order)return respond(404,{error:"Order not found."});
+
+      order.status=status;
+      order.statusUpdatedAt=new Date().toISOString();
+      await deadline(s.setJSON(key,order),6000,"Order status save");
       return respond(200,{ok:true,orderNumber,status});
     }
 
     return respond(405,{error:"Method not allowed."});
-  } catch (err) {
-    console.error(err);
+  }catch(err){
+    console.error("orders",err);
     return respond(500,{error:err?.message||"Could not load orders."});
   }
 };

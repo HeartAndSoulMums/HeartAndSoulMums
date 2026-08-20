@@ -1,26 +1,28 @@
-HEART & SOUL — PRIVATE ORDER STORE
+HEART & SOUL — ORDERS STORAGE FIX
 
-This build stops using the Netlify Forms API for the owner dashboard.
+This build removes the custom `order-index` object.
 
-Upload ALL ZIP contents to the ROOT of GitHub, commit, and wait for Netlify to publish.
+Orders are now:
+- saved as individual Netlify Blobs using keys like `order:HS-...`
+- discovered using Netlify Blobs' native `list({ prefix: "order:" })`
+- read with strong consistency so new orders appear immediately
+- protected by the existing OWNER_DASHBOARD_KEY
 
-Then open:
-https://heartandsoulmums.netlify.app/orders/
+UPLOAD
+Upload ALL contents of this ZIP to the ROOT of your GitHub repo and commit.
 
-You must see:
-BUILD: PRIVATE-ORDERS-STORE
+After Netlify publishes, /orders/ must display:
+BUILD: ORDERS-STORAGE-FIX
 
-Only OWNER_DASHBOARD_KEY is required now.
-NETLIFY_ACCESS_TOKEN and MUM_ORDER_FORM_ID are no longer used by the Orders Dashboard.
+FIRST TEST THE STORAGE ENDPOINT
+Open:
+https://heartandsoulmums.netlify.app/.netlify/functions/orders?storageTest=1
 
-IMPORTANT:
-Old orders already sitting in Netlify Forms will not automatically appear in this new dashboard.
+Expected:
+{"ok":true,"blobCount":0,...}
+(or a higher blobCount if a new private-store order already exists)
 
-After this build is live, submit ONE NEW mock order from the NORMAL customer website.
-That new order will:
-1. still save to Netlify Forms as a backup
-2. also save to the private Orders Dashboard store
+Then submit ONE NEW order from the normal customer site and open /orders/.
 
-Then open /orders/ and log in. That new order should appear.
-
-Order statuses are persistent in this version.
+No environment-variable changes are needed.
+NETLIFY_ACCESS_TOKEN and MUM_ORDER_FORM_ID are still not used by this dashboard.
