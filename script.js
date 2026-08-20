@@ -363,12 +363,17 @@ form.addEventListener('submit',e=>{
 });
 document.getElementById('closeDialog').addEventListener('click',()=>dialog.close());
 document.getElementById('editOrder').addEventListener('click',()=>dialog.close());
-document.getElementById('copyOrder').addEventListener('click',async()=>{
+document.getElementById('copyOrder')?.addEventListener('click',async()=>{
   try{
     await navigator.clipboard.writeText(orderText());
-    const b=document.getElementById('copyOrder'), old=b.textContent;
-    b.textContent='Copied!'; setTimeout(()=>b.textContent=old,1500);
-  }catch(e){alert('Copy failed. You can select the order details manually.');}
+    const b=document.getElementById('copyOrder');
+    if(!b) return;
+    const old=b.textContent;
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent=old,1500);
+  }catch(e){
+    alert('Copy failed. You can select the order details manually.');
+  }
 });
 
 
@@ -448,6 +453,8 @@ const testOrderDialog = document.getElementById('testOrderDialog');
 if(TEST_MODE){
   if(testModeBanner) testModeBanner.hidden = false;
   if(simulatePaidOrderBtn) simulatePaidOrderBtn.hidden = false;
+  const realSubmitBtn=document.getElementById('submitRealOrder');
+  if(realSubmitBtn) realSubmitBtn.hidden=true;
 }
 
 function ownerField(label,value){
