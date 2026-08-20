@@ -1,15 +1,26 @@
-HEART & SOUL ORDERS — NO CACHE FIX
+HEART & SOUL — PRIVATE ORDER STORE
 
-Upload ALL contents of this ZIP to the ROOT of your GitHub repository.
+This build stops using the Netlify Forms API for the owner dashboard.
 
-After Netlify publishes the new deploy, open:
+Upload ALL ZIP contents to the ROOT of GitHub, commit, and wait for Netlify to publish.
+
+Then open:
 https://heartandsoulmums.netlify.app/orders/
 
-You MUST see this text under the intro:
-BUILD: ORDERS-NOCACHE-0820
+You must see:
+BUILD: PRIVATE-ORDERS-STORE
 
-If you do not see that build label, the new files are not live yet.
+Only OWNER_DASHBOARD_KEY is required now.
+NETLIFY_ACCESS_TOKEN and MUM_ORDER_FORM_ID are no longer used by the Orders Dashboard.
 
-This version embeds the dashboard JavaScript directly in orders/index.html and
-sends no-cache headers, so an old orders.js file cannot cause the dashboard
-to keep showing stale behavior.
+IMPORTANT:
+Old orders already sitting in Netlify Forms will not automatically appear in this new dashboard.
+
+After this build is live, submit ONE NEW mock order from the NORMAL customer website.
+That new order will:
+1. still save to Netlify Forms as a backup
+2. also save to the private Orders Dashboard store
+
+Then open /orders/ and log in. That new order should appear.
+
+Order statuses are persistent in this version.

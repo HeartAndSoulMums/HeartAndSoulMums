@@ -1,2 +1,4 @@
 /orders/*
   Cache-Control: no-cache, no-store, must-revalidate
+/.netlify/functions/*
+  Cache-Control: no-cache, no-store, must-revalidate

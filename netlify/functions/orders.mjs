@@ -1,101 +1,66 @@
-const API = "https://api.netlify.com/api/v1";
+import { getStore } from "@netlify/blobs";
 
-function response(status, body) {
+function respond(status, body) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store"
-    }
+    headers: {"Content-Type":"application/json","Cache-Control":"no-store"}
   });
 }
-
 function authorized(request) {
   const expected = process.env.OWNER_DASHBOARD_KEY || "";
   const supplied = request.headers.get("x-owner-key") || "";
   return Boolean(expected && supplied && expected === supplied);
 }
 
-async function fetchWithTimeout(url, options = {}, ms = 8000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), ms);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 export default async (request) => {
   const url = new URL(request.url);
 
   if (request.method === "GET" && url.searchParams.get("health") === "1") {
-    return response(200, {
-      ok: true,
-      ownerKeyConfigured: Boolean(process.env.OWNER_DASHBOARD_KEY),
-      accessTokenConfigured: Boolean(process.env.NETLIFY_ACCESS_TOKEN),
-      formIdConfigured: Boolean(process.env.MUM_ORDER_FORM_ID)
+    return respond(200,{
+      ok:true,
+      ownerKeyConfigured:Boolean(process.env.OWNER_DASHBOARD_KEY),
+      storage:"Netlify Blobs"
     });
   }
 
-  if (!authorized(request)) {
-    return response(401, { error: "Unauthorized" });
-  }
+  if (!authorized(request)) return respond(401,{error:"Unauthorized"});
 
-  if (request.method === "GET" && url.searchParams.get("ping") === "1") {
-    return response(200, { ok: true, authenticated: true });
-  }
-
-  if (request.method !== "GET") {
-    return response(405, { error: "Only order viewing is enabled in this version." });
-  }
-
-  const token = process.env.NETLIFY_ACCESS_TOKEN;
-  const formId = process.env.MUM_ORDER_FORM_ID;
-
-  if (!token) return response(500, { error: "NETLIFY_ACCESS_TOKEN is missing." });
-  if (!formId) return response(500, { error: "MUM_ORDER_FORM_ID is missing." });
+  const store = getStore("heart-and-soul-orders");
 
   try {
-    const apiResponse = await fetchWithTimeout(
-      `${API}/forms/${encodeURIComponent(formId)}/submissions`,
-      { headers: { Authorization: `Bearer ${token}` } },
-      8000
-    );
-
-    const raw = await apiResponse.text();
-
-    if (!apiResponse.ok) {
-      let detail = raw;
+    if (request.method === "GET") {
+      let index = [];
       try {
-        const parsed = JSON.parse(raw);
-        detail = parsed.message || parsed.error || raw;
+        index = await store.get("order-index",{type:"json"}) || [];
+        if (!Array.isArray(index)) index = [];
       } catch {}
-      return response(apiResponse.status, {
-        error: `Netlify order API returned ${apiResponse.status}: ${String(detail).slice(0, 220)}`
-      });
+
+      const orders = (await Promise.all(index.slice(0,500).map(async orderNumber=>{
+        try { return await store.get(`order:${orderNumber}`,{type:"json"}); }
+        catch { return null; }
+      }))).filter(Boolean).sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+
+      return respond(200,{orders});
     }
 
-    let submissions;
-    try {
-      submissions = JSON.parse(raw);
-    } catch {
-      return response(500, { error: "Netlify returned unreadable order data." });
+    if (request.method === "POST") {
+      const body = await request.json();
+      const orderNumber = String(body.orderNumber||"").trim();
+      const status = String(body.status||"").trim();
+      const allowed = ["New","Design Approved","In Production","Ready for Pickup","Completed","Cancelled"];
+      if (!orderNumber || !allowed.includes(status)) return respond(400,{error:"Invalid status update."});
+
+      const order = await store.get(`order:${orderNumber}`,{type:"json"});
+      if (!order) return respond(404,{error:"Order not found."});
+      order.status = status;
+      order.statusUpdatedAt = new Date().toISOString();
+      await store.setJSON(`order:${orderNumber}`,order);
+      return respond(200,{ok:true,orderNumber,status});
     }
 
-    const orders = (Array.isArray(submissions) ? submissions : []).map(s => ({
-      id: s.id,
-      created_at: s.created_at,
-      status: "New",
-      data: s.data || {}
-    }));
-
-    return response(200, { orders });
+    return respond(405,{error:"Method not allowed."});
   } catch (err) {
-    if (err?.name === "AbortError") {
-      return response(504, { error: "Netlify's order API timed out after 8 seconds." });
-    }
-    console.error("orders function error", err);
-    return response(500, { error: err?.message || "Could not retrieve orders." });
+    console.error(err);
+    return respond(500,{error:err?.message||"Could not load orders."});
   }
 };

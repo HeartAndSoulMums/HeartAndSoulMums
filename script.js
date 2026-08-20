@@ -378,6 +378,62 @@ document.getElementById('copyOrder')?.addEventListener('click',async()=>{
 
 
 
+
+function buildPrivateOrderPayload(orderNo,c){
+  const d=new FormData(form);
+  return {
+    orderNumber:orderNo,
+    botField:d.get('bot-field')||'',
+    package:d.get('package'),
+    size:d.get('size'),
+    length:d.get('length'),
+    fullness:d.get('fullness'),
+    primaryColor:d.get('primaryColor'),
+    primaryColorName:d.get('primaryColorName'),
+    secondaryColor:d.get('secondaryColor'),
+    secondaryColorName:d.get('secondaryColorName'),
+    accentColor:d.get('accentColor'),
+    style:d.get('style'),
+    studentName:d.get('studentName'),
+    nickname:d.get('nickname'),
+    school:d.get('school'),
+    mascot:d.get('mascot'),
+    grade:d.get('grade'),
+    gradYear:d.get('gradYear'),
+    number:d.get('number'),
+    homecomingDate:d.get('homecomingDate'),
+    activities:d.get('activities'),
+    favorites:d.get('favorites'),
+    song:d.get('song'),
+    quote:d.get('quote'),
+    specialDate:d.get('specialDate'),
+    addons:addonChecks.filter(x=>x.checked).map(x=>x.value),
+    braid:d.get('braid'),
+    printedRibbon:d.get('printedRibbon'),
+    ribbonText:d.get('ribbonText'),
+    instructions:d.get('instructions'),
+    inspirationCount:form.elements.inspiration.files?.length||0,
+    customerName:d.get('customerName'),
+    phone:d.get('phone'),
+    email:d.get('email'),
+    contactMethod:d.get('contactMethod'),
+    estimatedTotal:c.total,
+    promoCodeApplied:activePromo?.code||'',
+    referralStudent:activePromo?.name||'',
+    referralSchool:activePromo?.school||''
+  };
+}
+async function savePrivateOrder(orderNo,c){
+  const response=await fetch('/.netlify/functions/save-order',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(buildPrivateOrderPayload(orderNo,c))
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(data.error||'Private order save failed.');
+  return data;
+}
+
 function realOrderNumber(){
   const d=new Date();
   const y=String(d.getFullYear()).slice(-2);
@@ -421,6 +477,8 @@ async function submitOrderToNetlify(){
       body:encodeFormData(fd)
     });
     if(!response.ok) throw new Error('Submission failed');
+
+    await savePrivateOrder(orderNo,c);
 
     document.getElementById('confirmationOrderNumber').textContent=orderNo;
     document.getElementById('confirmationTotal').textContent=money(c.total);
