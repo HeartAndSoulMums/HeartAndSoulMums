@@ -6,10 +6,9 @@ function respond(status,body){
     headers:{"Content-Type":"application/json","Cache-Control":"no-store"}
   });
 }
-function authorized(request){
+function validKey(supplied){
   const expected=process.env.OWNER_DASHBOARD_KEY||"";
-  const supplied=request.headers.get("x-owner-key")||"";
-  return Boolean(expected&&supplied&&expected===supplied);
+  return Boolean(expected && supplied && expected===supplied);
 }
 async function deadline(promise,ms,label){
   let timer;
@@ -62,19 +61,22 @@ export default async(request)=>{
         ok:true,
         blobCount:blobs.length,
         firstRead,
-        build:"JSON-READ-FIX"
+        build:"LOGIN-FIX"
       });
     }catch(err){
-      return respond(500,{ok:false,error:err?.message||"Storage test failed.",build:"JSON-READ-FIX"});
+      return respond(500,{ok:false,error:err?.message||"Storage test failed.",build:"LOGIN-FIX"});
     }
   }
 
-  if(!authorized(request))return respond(401,{error:"Unauthorized"});
   const s=store();
 
   try{
-    if(request.method==="GET"){
-      const listed=await deadline(s.list({prefix:"order:"}),6000,"Order list");
+    if(request.method==="POST"){
+      const body=await request.json();
+      if(!validKey(String(body.ownerKey||""))) return respond(401,{error:"Unauthorized"});
+
+      if(body.action==="list"){
+        const listed=await deadline(s.list({prefix:"order:"}),6000,"Order list");
       const blobs=(listed.blobs||[]).slice(0,500);
 
       const results=[];
@@ -91,12 +93,11 @@ export default async(request)=>{
         results.push(...values.filter(Boolean));
       }
 
-      results.sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
-      return respond(200,{orders:results});
-    }
+        results.sort((a,b)=>String(b.createdAt||"").localeCompare(String(a.createdAt||"")));
+        return respond(200,{orders:results,build:"LOGIN-FIX"});
+      }
 
-    if(request.method==="POST"){
-      const body=await request.json();
+      if(body.action!=="status") return respond(400,{error:"Invalid action."});
       const orderNumber=String(body.orderNumber||"").trim();
       const status=String(body.status||"").trim();
       const allowed=["New","Design Approved","In Production","Ready for Pickup","Completed","Cancelled"];

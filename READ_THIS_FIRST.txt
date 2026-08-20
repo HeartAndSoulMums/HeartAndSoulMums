@@ -1,31 +1,18 @@
-HEART & SOUL — JSON READ FIX
+HEART & SOUL — LOGIN REQUEST FIX
 
-We isolated the exact issue.
+The storage layer is proven working. This build changes ONLY the owner-dashboard request path.
 
-Netlify Blobs:
-- `store.get(key, { type: "json" })` returns the parsed JSON object DIRECTLY.
-- `getWithMetadata()` is the method that returns `{ data, etag, metadata }`.
+The dashboard no longer sends the owner password in a custom x-owner-key request header.
+Instead it sends a normal same-origin POST body:
+  { action: "list", ownerKey: "..." }
 
-The previous build incorrectly tried to read `.data`, which stripped the outer
-order object and caused orderNumber/studentName to become null.
+This removes the remaining difference between the successful diagnostic request and the hanging dashboard request.
 
-STEPS
-1. Upload ALL contents of this ZIP to the ROOT of GitHub.
-2. Commit and wait for Netlify to publish.
-3. Confirm /orders/ says:
-   BUILD: JSON-READ-FIX
+UPLOAD:
+1. Upload ALL ZIP contents to the GitHub repo root.
+2. Commit and wait for Netlify.
+3. Confirm /orders/ says BUILD: LOGIN-FIX.
+4. Enter the owner password and click Open Orders.
 
-4. Open:
-https://heartandsoulmums.netlify.app/.netlify/functions/orders?storageTest=1
-
-Expected:
-"blobCount":1,
-"firstRead":{
-  "ok":true,
-  "orderNumber":"HS-...",
-  "studentName":"..."
-}
-
-5. Then open /orders/ and enter the owner password.
-
-No environment-variable changes are required.
+No environment variable changes.
+The existing saved Jordan Davis order remains in Netlify Blobs and does NOT need to be resubmitted.

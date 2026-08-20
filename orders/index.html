@@ -19,7 +19,7 @@
         <img src="/heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums">
         <span class="eyebrow">OWNER ACCESS</span>
         <h1>Orders Dashboard</h1>
-        <p>Enter the private owner dashboard password to view customer orders.</p><div style="font-size:10px;color:#9a8e93;margin:-5px 0 16px;letter-spacing:.06em">BUILD: JSON-READ-FIX</div>
+        <p>Enter the private owner dashboard password to view customer orders.</p><div style="font-size:10px;color:#9a8e93;margin:-5px 0 16px;letter-spacing:.06em">BUILD: LOGIN-FIX</div>
         <form id="loginForm">
           <label>Owner password
             <input id="ownerKey" type="password" autocomplete="current-password" required>
@@ -100,16 +100,27 @@ function orderTotal(o){return Number(o.data?.estimatedTotal||0)}
 function studentName(o){return o.data?.studentName||"Unnamed student"}
 function customerName(o){return o.data?.customerName||"Unknown customer"}
 
-async function api(method="GET",body){
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
+async function api(action="list",body={}){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try{
-    const res=await fetch("/.netlify/functions/orders",{method,headers:{"x-owner-key":ownerKey,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined,cache:"no-store",signal:controller.signal});
+    const res=await fetch("/.netlify/functions/orders",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action,ownerKey,...body}),
+      cache:"no-store",
+      signal:controller.signal
+    });
     const raw=await res.text();let data={};
     try{data=raw?JSON.parse(raw):{}}catch{throw new Error(`Unexpected server response (${res.status}).`)}
-    if(!res.ok){if(res.status===401)throw new Error("Incorrect owner password.");throw new Error(data.error||`Server error (${res.status}).`)}
+    if(!res.ok){
+      if(res.status===401)throw new Error("Incorrect owner password.");
+      throw new Error(data.error||`Server error (${res.status}).`);
+    }
     return data;
-  }catch(err){if(err?.name==="AbortError")throw new Error("Orders server timed out.");throw err}
-  finally{clearTimeout(timer)}
+  }catch(err){
+    if(err?.name==="AbortError")throw new Error("Orders server timed out.");
+    throw err;
+  }finally{clearTimeout(timer)}
 }
 async function runHealth(){
   const s=$("#loginStatus");
