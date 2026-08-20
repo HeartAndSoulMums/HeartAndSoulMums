@@ -1,163 +1,97 @@
-import { getStore } from "@netlify/blobs";
-
 const API = "https://api.netlify.com/api/v1";
 
-function json(statusCode, body) {
-  return {
-    statusCode,
+function response(status, body) {
+  return new Response(JSON.stringify(body), {
+    status,
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store"
-    },
-    body: JSON.stringify(body)
-  };
-}
-
-function isAuthorized(event) {
-  const expected = process.env.OWNER_DASHBOARD_KEY;
-  const supplied = event.headers["x-owner-key"] || event.headers["X-Owner-Key"];
-  return Boolean(expected && supplied && supplied === expected);
-}
-
-async function netlifyFetch(path) {
-  const token = process.env.NETLIFY_ACCESS_TOKEN;
-  if (!token) throw new Error("NETLIFY_ACCESS_TOKEN is not configured.");
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-  let response;
-  try {
-    response = await fetch(`${API}${path}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: controller.signal
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Netlify API ${response.status}: ${text.slice(0, 300)}`);
-  }
-  return response.json();
-}
-
-async function getFormId() {
-  if (process.env.MUM_ORDER_FORM_ID) return process.env.MUM_ORDER_FORM_ID;
-
-  const siteId = process.env.SITE_ID;
-  if (!siteId) throw new Error("SITE_ID or MUM_ORDER_FORM_ID must be configured.");
-
-  const forms = await netlifyFetch(`/sites/${encodeURIComponent(siteId)}/forms`);
-  const form = forms.find(f => f.name === "mum-order");
-  if (!form) throw new Error('Could not find a Netlify form named "mum-order".');
-  return form.id;
-}
-
-async function readStatuses(orderNumbers) {
-  const store = getStore("heart-and-soul-order-status");
-  const pairs = await Promise.all(orderNumbers.map(async (orderNo) => {
-    if (!orderNo) return [orderNo, null];
-    try {
-      return [orderNo, await store.get(orderNo, { type: "json" })];
-    } catch {
-      return [orderNo, null];
     }
-  }));
-  return Object.fromEntries(pairs);
+  });
 }
 
-export default async (request, context) => {
-  const event = {
-    headers: Object.fromEntries(request.headers.entries())
-  };
+function authorized(request) {
+  const expected = process.env.OWNER_DASHBOARD_KEY || "";
+  const supplied = request.headers.get("x-owner-key") || "";
+  return Boolean(expected && supplied && expected === supplied);
+}
 
+async function fetchWithTimeout(url, options = {}, ms = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+export default async (request) => {
   const url = new URL(request.url);
 
   if (request.method === "GET" && url.searchParams.get("health") === "1") {
-    return new Response(JSON.stringify({
+    return response(200, {
       ok: true,
       ownerKeyConfigured: Boolean(process.env.OWNER_DASHBOARD_KEY),
       accessTokenConfigured: Boolean(process.env.NETLIFY_ACCESS_TOKEN),
-      formIdConfigured: Boolean(process.env.MUM_ORDER_FORM_ID),
-      siteIdConfigured: Boolean(process.env.SITE_ID)
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+      formIdConfigured: Boolean(process.env.MUM_ORDER_FORM_ID)
     });
   }
 
-  if (!isAuthorized(event)) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
-    });
+  if (!authorized(request)) {
+    return response(401, { error: "Unauthorized" });
   }
+
+  if (request.method !== "GET") {
+    return response(405, { error: "Only order viewing is enabled in this version." });
+  }
+
+  const token = process.env.NETLIFY_ACCESS_TOKEN;
+  const formId = process.env.MUM_ORDER_FORM_ID;
+
+  if (!token) return response(500, { error: "NETLIFY_ACCESS_TOKEN is missing." });
+  if (!formId) return response(500, { error: "MUM_ORDER_FORM_ID is missing." });
 
   try {
-    if (request.method === "GET") {
-      const formId = await getFormId();
-      const submissions = await netlifyFetch(`/forms/${encodeURIComponent(formId)}/submissions`);
+    const apiResponse = await fetchWithTimeout(
+      `${API}/forms/${encodeURIComponent(formId)}/submissions`,
+      { headers: { Authorization: `Bearer ${token}` } },
+      8000
+    );
 
-      const orders = submissions.map(s => ({
-        id: s.id,
-        created_at: s.created_at,
-        data: s.data || {}
-      }));
+    const raw = await apiResponse.text();
 
-      let statuses = {};
+    if (!apiResponse.ok) {
+      let detail = raw;
       try {
-        statuses = await readStatuses(
-          orders.map(o => o.data.orderNumber || o.id)
-        );
-      } catch (statusError) {
-        console.warn("Status storage unavailable; continuing with New status.", statusError);
-      }
-
-      for (const order of orders) {
-        const orderNo = order.data.orderNumber || order.id;
-        order.status = statuses[orderNo]?.status || "New";
-        order.statusUpdatedAt = statuses[orderNo]?.updatedAt || null;
-      }
-
-      return new Response(JSON.stringify({ orders }), {
-        status: 200,
-        headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+        const parsed = JSON.parse(raw);
+        detail = parsed.message || parsed.error || raw;
+      } catch {}
+      return response(apiResponse.status, {
+        error: `Netlify order API returned ${apiResponse.status}: ${String(detail).slice(0, 220)}`
       });
     }
 
-    if (request.method === "POST") {
-      const payload = await request.json();
-      const orderNumber = String(payload.orderNumber || "").trim();
-      const status = String(payload.status || "").trim();
-      const allowed = ["New", "Design Approved", "In Production", "Ready for Pickup", "Completed", "Cancelled"];
-
-      if (!orderNumber || !allowed.includes(status)) {
-        return new Response(JSON.stringify({ error: "Invalid status update" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      const store = getStore("heart-and-soul-order-status");
-      await store.setJSON(orderNumber, {
-        status,
-        updatedAt: new Date().toISOString()
-      });
-
-      return new Response(JSON.stringify({ ok: true, orderNumber, status }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" }
-      });
+    let submissions;
+    try {
+      submissions = JSON.parse(raw);
+    } catch {
+      return response(500, { error: "Netlify returned unreadable order data." });
     }
 
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" }
-    });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message || "Server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
-    });
+    const orders = (Array.isArray(submissions) ? submissions : []).map(s => ({
+      id: s.id,
+      created_at: s.created_at,
+      status: "New",
+      data: s.data || {}
+    }));
+
+    return response(200, { orders });
+  } catch (err) {
+    if (err?.name === "AbortError") {
+      return response(504, { error: "Netlify's order API timed out after 8 seconds." });
+    }
+    console.error("orders function error", err);
+    return response(500, { error: err?.message || "Could not retrieve orders." });
   }
 };

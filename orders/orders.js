@@ -113,11 +113,16 @@ async function login(e){
   }
 
   btn.disabled=true;
-  btn.textContent="Connecting…";
-  status.textContent="Connecting securely to Heart & Soul orders…";
+  btn.textContent="Opening…";
+  status.textContent="Retrieving customer orders…";
+  status.style.color="";
 
   try{
-    const data=await api();
+    const timeoutPromise=new Promise((_,reject)=>
+      setTimeout(()=>reject(new Error("Dashboard request timed out after 12 seconds.")),12000)
+    );
+    const data=await Promise.race([api(),timeoutPromise]);
+
     orders=data.orders||[];
     $("#lastUpdated").textContent=`Updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
     render();
@@ -129,7 +134,7 @@ async function login(e){
     if(message==="Unauthorized") message="Incorrect owner password.";
     error.textContent=message;
     status.textContent="Could not open the dashboard.";
-    ownerKey="";
+    status.style.color="#b42318";
   }finally{
     btn.disabled=false;
     btn.textContent="Open Orders";
@@ -251,17 +256,14 @@ Order #: ${esc(orderNumber(o))}</div></section>
   $("#orderDetail").innerHTML=detail;
   $("#orderDialog").showModal();
   $("#printOrder").addEventListener("click",()=>window.print());
-  $("#detailStatus").addEventListener("change",async e=>{
-    const next=e.target.value, prior=o.status;
-    e.target.disabled=true;
-    try{
-      await api("POST",{orderNumber:orderNumber(o),status:next});
-      o.status=next; render();
-      $("#orderDialog").close(); openOrder(o.id);
-    }catch(err){
-      e.target.value=prior;
-      alert("Could not update status: "+err.message);
-    }finally{e.target.disabled=false}
+  $("#detailStatus").addEventListener("change",e=>{
+    const next=e.target.value;
+    o.status=next;
+    render();
+    const note=document.createElement("div");
+    note.style.cssText="margin-top:10px;font-size:11px;color:#786970;line-height:1.4";
+    note.textContent="Status changes are temporary in this troubleshooting build and reset on refresh.";
+    e.target.parentElement.appendChild(note);
   });
 }
 
