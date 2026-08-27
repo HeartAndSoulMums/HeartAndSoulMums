@@ -1,0 +1,11 @@
+Heart & Soul Signature Mums — No Mum Photos Build
+
+Changes:
+- Removed all current mum photos from the public website package.
+- Restored the clean logo-based homepage hero.
+- Removed the mum image used for social-sharing preview metadata.
+- Cleared the public gallery so it stays hidden until better-quality photos are added.
+- Removed the current gallery image files from the package.
+- Kept gallery controls available in Owner Admin for future high-quality photos.
+- Preserved the public-order button fix: Simulate Paid Test Order remains hidden outside test mode.
+- No order backend, pricing, owner dashboard, domain, or storage changes were made.

@@ -119,33 +119,7 @@
       "fee": "+40–50% if accepted"
     }
   ],
-  "gallery": [
-    {
-      "image": "/assets/gallery/senior-showstopper-full.jpg",
-      "alt": "Pink, white and silver custom senior homecoming mum with feathers and specialty ribbon",
-      "caption": "Senior Showstopper • Pink, white + silver"
-    },
-    {
-      "image": "/assets/gallery/senior-showstopper-front.jpg",
-      "alt": "Full front view of a custom senior homecoming mum",
-      "caption": "Designed from top to ribbon tip"
-    },
-    {
-      "image": "/assets/gallery/senior-showstopper-detail.jpg",
-      "alt": "Close-up of custom homecoming mum flowers, teddy bear, Texas accent and ribbon work",
-      "caption": "Custom details that make it personal"
-    },
-    {
-      "image": "/assets/gallery/senior-showstopper-close.jpg",
-      "alt": "Close-up of premium flowers, rhinestones and ribbon details on a homecoming mum",
-      "caption": "Layered texture, sparkle + school spirit"
-    },
-    {
-      "image": "/assets/gallery/senior-showstopper-length.jpg",
-      "alt": "Full-length custom senior homecoming mum with long ribbons and feathers",
-      "caption": "A keepsake made for their final homecoming"
-    }
-  ],
+  "gallery": [],
   "footer_text": "Custom homecoming mums made with heart and designed for spirit.",
   "branding": {
     "business_name": "Heart & Soul Signature Mums",
