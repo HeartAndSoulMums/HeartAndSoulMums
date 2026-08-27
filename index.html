@@ -4,7 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Heart & Soul Signature Mums | Custom Homecoming Mums</title>
-  <meta name="description" content="Premium custom homecoming mums designed around the student wearing them. Choose your tier, size, colors, personalization and upgrades." />
+  <meta name="description" content="Heart & Soul Signature Mums creates premium custom homecoming and senior mums personalized around each student, their school, colors, activities and memories." />
+  <link rel="canonical" href="https://heartandsoulsignaturemums.com/" />
+  <meta property="og:title" content="Heart & Soul Signature Mums | Custom Homecoming Mums" />
+  <meta property="og:description" content="Premium custom homecoming and senior mums made around the student wearing them." />
+  <meta property="og:url" content="https://heartandsoulsignaturemums.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://heartandsoulsignaturemums.com/assets/gallery/senior-showstopper-full.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -49,8 +55,11 @@
       </div>
     </div>
     <div class="hero-art">
-      <div class="hero-logo-wrap">
-        <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="cms-logo">
+      <div class="hero-photo-wrap">
+        <img src="/assets/gallery/senior-showstopper-full.jpg" alt="Custom Heart & Soul senior homecoming mum in pink, white and silver">
+        <div class="hero-logo-badge">
+          <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="cms-logo">
+        </div>
       </div>
       <div class="floating-note note-one">YOUR SCHOOL.</div>
       <div class="floating-note note-two">YOUR COLORS.</div>
@@ -307,7 +316,7 @@
             <label class="full-label">Inspiration photos
               <input type="file" name="inspiration" accept="image/*" multiple>
             </label>
-            <p class="helper">This prototype allows photo selection, but live upload storage will be connected when the ordering system goes live. Up to 3 inspiration photos is recommended.</p>
+            <p class="helper">Choose up to 3 inspiration photos to help us understand the look, details or style you love.</p>
           </div>
         </div>
 
@@ -364,7 +373,7 @@
           </div>
           <div class="summary-total"><span>Estimated total</span><strong id="totalPrice">$195</strong></div>
           <div class="deposit-box">
-            <span>Payment due at checkout</span>
+            <span>Estimated amount due</span>
             <strong id="payInFullPrice">$195</strong>
           </div>
           <p id="quoteNote">Final price is confirmed after design review. Custom requests may affect pricing.</p>
@@ -387,7 +396,7 @@
     <div class="section-heading">
       <span class="eyebrow">ORDERING POLICIES</span>
       <h2>Designed to protect your date and your custom piece.</h2>
-      <p>These are proposed policies for the business to approve before launch.</p>
+      <p>Please review these policies before submitting your custom order.</p>
     </div>
     <div class="policy-grid" id="policyGrid">
       <article><h3>Payment in Full</h3><p>Full payment is required before production begins and confirms the order.</p></article>
@@ -400,8 +409,8 @@
   <section class="section rush-section">
     <div class="section-heading">
       <span class="eyebrow">HOMECOMING COMES FAST</span>
-      <h2>Proposed rush pricing</h2>
-      <p>Rush pricing can be turned on automatically based on the customer's homecoming date once the business approves these percentages.</p>
+      <h2>Rush order pricing</h2>
+      <p>Rush fees help cover priority scheduling and expedited material sourcing when your homecoming date is close.</p>
     </div>
     <div class="rush-grid" id="rushGrid">
       <div><strong>14+ days</strong><span>Standard pricing</span></div>
@@ -435,8 +444,7 @@
 <footer>
   <img src="heart-and-soul-logo.jpeg" alt="Heart & Soul Signature Mums" class="footer-logo cms-logo">
   <p id="footerText">Premium custom homecoming design.</p>
-  <p class="footer-small">© 2026 Heart & Soul Signature Mums • Pricing and policies shown are proposed and can be edited before launch.</p>
-  <p class="admin-link-wrap"><a href="/admin/" class="admin-link">Site Admin</a></p>
+  <p class="footer-small">© 2026 Heart & Soul Signature Mums • Custom designs are subject to availability and final approval.</p>
 </footer>
 
 <dialog id="orderDialog">
@@ -449,7 +457,7 @@
     <button type="button" class="button test-button" id="simulatePaidOrder" hidden>Simulate Paid Test Order</button>
     <button type="button" class="button secondary" id="editOrder">Keep Editing</button>
   </div>
-  <p class="tiny-note">Submitting sends this order to Heart & Soul for review. Online payment will be added when the payment processor is connected.</p>
+  <p class="tiny-note">Submitting sends your custom order request to Heart & Soul for review. We’ll contact you to confirm the design, final price and payment instructions.</p>
 </dialog>
 
 
@@ -464,7 +472,7 @@
     <div><span>Order reference</span><strong id="confirmationOrderNumber">—</strong></div>
     <div><span>Estimated total</span><strong id="confirmationTotal">—</strong></div>
   </div>
-  <p class="confirmation-copy">Heart & Soul will review the custom details and contact you if anything needs clarification. Payment will be collected once online checkout is connected.</p>
+  <p class="confirmation-copy">Heart & Soul will review your custom details and contact you with final confirmation, any questions and payment instructions.</p>
   <button class="button" id="finishConfirmation">Done</button>
 </dialog>
 

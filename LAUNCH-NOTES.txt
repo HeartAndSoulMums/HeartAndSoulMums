@@ -1,0 +1,24 @@
+HEART & SOUL SIGNATURE MUMS — OFFICIAL LAUNCH BUILD
+
+PUBLIC DOMAIN
+https://heartandsoulsignaturemums.com
+
+WHAT WAS FINALIZED
+- Added real Heart & Soul mum photography to the homepage hero and gallery.
+- Added SEO/canonical/social-sharing metadata for the custom domain.
+- Enabled the "Now accepting custom Homecoming orders" announcement.
+- Removed demo REVIEW10 referral code.
+- Removed prototype / proposed / payment-coming-soon language.
+- Reworded checkout references for manual payment instructions after review.
+- Removed the public Site Admin footer link.
+- Removed troubleshooting/debug build labels from the owner dashboard.
+- Preserved the working private order dashboard and Netlify Blobs order storage.
+- Preserved Decap owner controls so photos, pricing, copy, referrals and branding remain editable.
+
+PAYMENT
+No online payment processor is connected in this build by design.
+Customers submit the order request; Heart & Soul reviews it and provides payment instructions.
+
+UPLOAD
+Upload all files/folders in this package to the ROOT of the GitHub repository and commit.
+Because Netlify production deploy credits may be limited, use this as a bundled launch update rather than making multiple small production deployments.
