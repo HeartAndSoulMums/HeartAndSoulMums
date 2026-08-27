@@ -1,0 +1,8 @@
+Heart & Soul — Public Test Button Fix
+
+Fix:
+- Restores proper browser [hidden] behavior globally.
+- "Simulate Paid Test Order" stays hidden on the normal public ordering page.
+- The button still appears when intentionally using test mode with ?test=1 or /test/.
+
+No backend, order storage, pricing, or owner-dashboard changes were made.
