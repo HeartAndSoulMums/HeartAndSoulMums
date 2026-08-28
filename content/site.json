@@ -77,7 +77,14 @@
     "discount_percent": 10,
     "reward_orders": 5,
     "reward_text": "Free Classic mum after 5 fully paid, non-refunded qualifying orders.",
-    "codes": []
+    "codes": [
+      {
+        "code": "KENNEDY10",
+        "student": "Kennedy",
+        "school": "",
+        "active": true
+      }
+    ]
   },
   "senior": {
     "heading": "Four years. One final homecoming.",

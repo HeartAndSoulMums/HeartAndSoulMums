@@ -1,0 +1,16 @@
+HEART & SOUL — FIRST LIVE COUPON CODE
+
+Coupon code:
+Kennedy10
+
+Discount:
+10% off the order subtotal.
+
+Notes:
+- Coupon matching is case-insensitive, so Kennedy10, KENNEDY10, and kennedy10 all work.
+- The discount is shown in the order total before submission.
+- Submitted orders retain the promo code and referral student for tracking in the owner dashboard/backend.
+- This code is marked Active.
+- Future codes can be added from Owner Admin → Student Referral Codes.
+
+No payment-system changes were made.
