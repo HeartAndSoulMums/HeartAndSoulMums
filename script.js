@@ -533,6 +533,65 @@ function orderText(){
   return lines.join('\\n');
 }
 
+
+function buildCurrentOrderPayload(){
+  const d = new FormData(form);
+  const val = name => {
+    const v = d.get(name);
+    return v === null || v === undefined ? '' : String(v).trim();
+  };
+
+  const selectedAddons = [...form.querySelectorAll('input[name="addons"]:checked')].map(x => x.value);
+  const pkgRadio = form.querySelector('input[name="package"]:checked');
+  const packageName = pkgRadio?.value || '';
+
+  const totalText = document.getElementById('totalPrice')?.textContent || '$0';
+  const estimatedTotal = Number(totalText.replace(/[^0-9.]/g,'')) || 0;
+
+  const payload = {
+    package: packageName,
+    length: val('length'),
+    fullness: val('fullness'),
+    schoolName: val('schoolName'),
+
+    primaryColor: val('primaryColor'),
+    primaryColorName: val('primaryColorName'),
+    secondaryColor: val('secondaryColor'),
+    secondaryColorName: val('secondaryColorName'),
+    thirdColor: val('thirdColor'),
+    thirdColorName: val('thirdColorName'),
+    accentColor: val('accentColor'),
+    accentColorName: val('accentColorName'),
+
+    vibe: val('vibe'),
+    activities: val('activities'),
+
+    addons: selectedAddons,
+    stuffedAnimalText: val('stuffedAnimalText'),
+    extraWordsCount: val('extraWordsCount'),
+    extraWordsText: val('extraWordsText'),
+
+    braid: val('braid'),
+    printedRibbon: val('printedRibbon'),
+    ribbonText: val('ribbonText'),
+
+    customInstructions: val('customInstructions') || val('inspirationNotes') || val('notes'),
+
+    customerName: val('customerName') || val('name'),
+    phone: val('phone'),
+    email: val('email'),
+
+    promoCode: val('promoCode'),
+    referralStudent: (typeof activePromo !== 'undefined' && activePromo?.name) ? activePromo.name : '',
+    referralSchool: (typeof activePromo !== 'undefined' && activePromo?.school) ? activePromo.school : '',
+
+    estimatedTotal,
+    photoAddonFile: form.elements.photoAddon?.files?.[0]?.name || ''
+  };
+
+  return payload;
+}
+
 const dialog=document.getElementById('orderDialog');
 const reviewOrderBtn=document.getElementById('reviewOrderBtn');
 
@@ -1013,3 +1072,89 @@ if(photoAddonCheckbox){
   });
 }
 syncPhotoAddonDetail();
+
+
+const submitOrderBtn=document.getElementById('submitRealOrder');
+let orderSubmitInFlight=false;
+
+async function submitCurrentOrder(){
+  if(orderSubmitInFlight) return;
+
+  if(TEST_MODE){
+    alert('Test mode is enabled. Real orders are not submitted in test mode.');
+    return;
+  }
+
+  normalizeConditionalRequirements();
+
+  if(!form.checkValidity()){
+    if(dialog?.open) dialog.close();
+    form.reportValidity();
+    const invalid=form.querySelector(':invalid');
+    if(invalid){
+      invalid.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>invalid.focus({preventScroll:true}),350);
+    }
+    return;
+  }
+
+  const originalText=submitOrderBtn?.textContent || 'Submit Order';
+
+  try{
+    orderSubmitInFlight=true;
+    if(submitOrderBtn){
+      submitOrderBtn.disabled=true;
+      submitOrderBtn.textContent='Submitting...';
+    }
+
+    const payload=buildCurrentOrderPayload();
+
+    const response=await fetch('/netlify/functions/orders',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({data:payload})
+    });
+
+    let result={};
+    try{ result=await response.json(); }catch(_e){}
+
+    if(!response.ok){
+      const msg=result?.error || result?.message || `Order submission failed (${response.status}).`;
+      throw new Error(msg);
+    }
+
+    if(dialog?.open) dialog.close();
+
+    const orderNumber=result?.orderNumber || result?.order?.orderNumber || '';
+    alert(orderNumber
+      ? `Order request submitted successfully! Your order number is ${orderNumber}.`
+      : 'Order request submitted successfully!');
+
+    form.reset();
+    if(typeof activePromo !== 'undefined') activePromo=null;
+
+    try{
+      if(typeof updatePackageDependentFields==='function') updatePackageDependentFields();
+      if(typeof calc==='function') calc();
+      if(typeof syncPackageUI==='function') syncPackageUI();
+    }catch(_e){}
+
+  }catch(err){
+    console.error('Order submission error:',err);
+    alert(`We could not submit the order request. ${err.message || 'Please try again.'}`);
+  }finally{
+    orderSubmitInFlight=false;
+    if(submitOrderBtn){
+      submitOrderBtn.disabled=false;
+      submitOrderBtn.textContent=originalText;
+    }
+  }
+}
+
+if(submitOrderBtn){
+  submitOrderBtn.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    submitCurrentOrder();
+  },true);
+}
