@@ -318,8 +318,8 @@
               </label>
 
               <label class="addon">
-                <input type="checkbox" name="addons" value="Extra Words" data-price="0" data-detail="extraWordsDetail">
-                <span><strong>Extra Words</strong><small>Additional custom wording</small></span>
+                <input type="checkbox" name="addons" value="Extra Words" data-price="7" data-detail="extraWordsDetail">
+                <span><strong>Extra Words</strong><small>Additional custom wording • +$7</small></span>
               </label>
             </div>
 
@@ -342,27 +342,26 @@
               <label>Upload Photo
                 <input type="file" name="photoAddon" accept="image/*">
               </label>
-              <p class="helper">Choose the photo you want incorporated into the mum.</p>
+              <p class="helper">Upload the photo you want incorporated into the mum.</p>
             </div>
 
             <div id="stuffedAnimalDetail" class="conditional-detail" hidden>
-              <label>Stuffed Animal Details
-                <input type="text" name="stuffedAnimalText" placeholder="Tell us what stuffed animal you want">
+              <label>What stuffed animal would you like?
+                <input type="text" name="stuffedAnimalText" placeholder="Example: teddy bear, cow, bulldog, etc.">
               </label>
             </div>
 
             <div id="extraWordsDetail" class="conditional-detail" hidden>
               <label>How many extra words?
                 <select name="extraWordsCount" class="priced-select">
-                  <option value="0" data-price="0">Select quantity</option>
-                  <option value="1" data-price="7">1 word — +$7</option>
-                  <option value="2" data-price="14">2 words — +$14</option>
-                  <option value="3" data-price="21">3 words — +$21</option>
+                  <option value="1" data-price="0">1 word — $7 total</option>
+                  <option value="2" data-price="7">2 words — $14 total</option>
+                  <option value="3" data-price="14">3 words — $21 total</option>
                 </select>
               </label>
 
-              <label>Extra Words
-                <input type="text" name="extraWordsText" placeholder="Enter the extra word(s)">
+              <label>Enter Extra Word(s)
+                <input type="text" name="extraWordsText" placeholder="Type the exact extra word(s)">
               </label>
             </div>
 
@@ -386,8 +385,8 @@
             </div>
 
             <div id="printedRibbonDetail" class="conditional-detail" hidden>
-              <label>Printed Ribbon Bible Verse/Quote
-                <input type="text" name="ribbonText" placeholder="Enter the exact Bible verse or quote">
+              <label>Enter Bible Verse/Quote
+                <textarea name="ribbonText" rows="3" placeholder="Type the exact Bible verse or quote you want printed"></textarea>
               </label>
             </div>
           </div>

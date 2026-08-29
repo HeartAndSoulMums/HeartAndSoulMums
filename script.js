@@ -181,6 +181,7 @@ async function loadSiteConfig(){
     SITE_CONFIG=FALLBACK_CONFIG;
   }
   applySiteConfig();
+  updatePackageDependentFields();
   calc();
 }
 
@@ -238,13 +239,23 @@ function updateConditionalAddonFields(){
 function extraWordCharge(){
   const checked=addonChecks.find(a=>a.value==='Extra Words')?.checked;
   if(!checked) return 0;
-  const qty=Math.max(1,Number(form.elements.extraWordQty?.value||1));
-  return qty*Number(SITE_CONFIG.pricing?.extra_word_each||7);
+  const select=form.elements.extraWordsCount;
+  if(!select) return 0;
+  return selectPrice(select);
 }
 function schoolRibbonCharge(){
-  return String(form.elements.schoolRibbonText?.value||'').trim()
-    ? Number(SITE_CONFIG.pricing?.school_name_ribbon||7)
-    : 0;
+  return 0;
+}
+
+
+function syncConditionalDetails(){
+  updatePackageDependentFields();
+  updateConditionalAddonFields();
+
+  if(typeof syncPrintedRibbonDetail === 'function') syncPrintedRibbonDetail();
+  if(typeof syncExtraWordsDetail === 'function') syncExtraWordsDetail();
+  if(typeof syncStuffedAnimalDetail === 'function') syncStuffedAnimalDetail();
+  if(typeof syncPhotoAddonDetail === 'function') syncPhotoAddonDetail();
 }
 
 function selectPrice(select){
@@ -256,7 +267,9 @@ function money(n){
 }
 function calc(){syncConditionalDetails();
   const pkg = document.querySelector('input[name="package"]:checked');
-  const base = Number(pkg.dataset.price);
+  const selectedPackageName = pkg?.value || 'Mini Mum';
+  const configuredBase = Number(SITE_CONFIG.packages?.[selectedPackageName]?.price);
+  const base = Number.isFinite(configuredBase) ? configuredBase : Number(pkg?.dataset.price || 0);
   const structure = pricedSelects
     .filter(s => ['length','fullness'].includes(s.name))
     .reduce((a,s)=>a+selectPrice(s),0);
@@ -270,7 +283,7 @@ function calc(){syncConditionalDetails();
   const discount = activePromo ? subtotal * (SITE_CONFIG.referral.discount_percent / 100) : 0;
   const total = subtotal - discount;
 
-  summaryPackage.textContent = pkg.value === 'Garter' ? 'Garter' : `${pkg.value} Mum`;
+  summaryPackage.textContent = selectedPackageName === 'Garter' ? 'Garter' : `${selectedPackageName} Mum`;
   packagePrice.textContent = money(base);
   structurePrice.textContent = money(structure);
   addonPrice.textContent = money(extras);
@@ -280,7 +293,7 @@ function calc(){syncConditionalDetails();
   if(payInFullPrice) payInFullPrice.textContent = money(total);
   referralNote.hidden = !activePromo;
   referralNote.textContent = activePromo ? `Referral credited to ${activePromo.name}${activePromo.school ? ` • ${activePromo.school}` : ''} • Code ${activePromo.code}` : '';
-  quoteNote.textContent = pkg.value === 'Showstopper'
+  quoteNote.textContent = selectedPackageName === 'Showstopper'
     ? 'Showstopper starts at $500. Final price requires a custom design quote before payment.'
     : 'Final price is confirmed after design review. Highly custom requests or special-order materials may affect pricing.';
 
@@ -290,8 +303,20 @@ function calc(){syncConditionalDetails();
   updateConditionalAddonFields();
   return {pkg,base,structure,extras,subtotal,discount,total};
 }
-[...packageRadios,...addonChecks,...pricedSelects].forEach(x=>x.addEventListener('change',calc));
-form.elements.extraWordQty?.addEventListener('input',calc);
+packageRadios.forEach(radio=>{
+  radio.addEventListener('change',()=>{
+    updatePackageDependentFields();
+    try{calc();}catch(err){
+      console.error('Package update error:',err);
+      // Still keep the package-dependent UI correct even if an unrelated field fails.
+      updatePackageDependentFields();
+    }
+  });
+});
+[...addonChecks,...pricedSelects].forEach(x=>x.addEventListener('change',()=>{
+  try{calc();}catch(err){console.error('Estimate update error:',err);}
+}));
+form.elements.extraWordsCount?.addEventListener('change',calc);
 form.elements.schoolRibbonText?.addEventListener('input',calc);
 form.elements.primaryColor.addEventListener('input',calc);
 form.elements.secondaryColor.addEventListener('input',calc);
@@ -748,3 +773,109 @@ document.querySelectorAll('input[type="checkbox"][data-detail]').forEach(cb=>{
 if(form.elements.printedRibbon){
   form.elements.printedRibbon.addEventListener('change',()=>{syncConditionalDetails();calc();});
 }
+
+
+function syncPrintedRibbonDetail(){
+  const select=form.elements.printedRibbon;
+  const detail=document.getElementById('printedRibbonDetail');
+  if(!select || !detail) return;
+  const selected=select.value && select.value!=='None';
+  detail.hidden=!selected;
+  if(!selected && form.elements.ribbonText){
+    form.elements.ribbonText.value='';
+  }
+}
+
+if(form.elements.printedRibbon){
+  form.elements.printedRibbon.addEventListener('change',()=>{
+    syncPrintedRibbonDetail();
+    try{calc();}catch(err){console.error(err);}
+  });
+  syncPrintedRibbonDetail();
+}
+
+
+function syncExtraWordsDetail(){
+  const cb=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Extra Words');
+  const detail=document.getElementById('extraWordsDetail');
+  if(!cb || !detail) return;
+
+  detail.hidden=!cb.checked;
+
+  if(cb.checked){
+    if(form.elements.extraWordsCount && !form.elements.extraWordsCount.value){
+      form.elements.extraWordsCount.value='1';
+    }
+    if(form.elements.extraWordsText){
+      form.elements.extraWordsText.required=true;
+    }
+  }else{
+    if(form.elements.extraWordsCount){
+      form.elements.extraWordsCount.value='1';
+    }
+    if(form.elements.extraWordsText){
+      form.elements.extraWordsText.required=false;
+      form.elements.extraWordsText.value='';
+    }
+  }
+}
+
+const extraWordsCheckbox=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Extra Words');
+if(extraWordsCheckbox){
+  extraWordsCheckbox.addEventListener('change',()=>{
+    syncExtraWordsDetail();
+    try{calc();}catch(err){console.error(err);}
+  });
+}
+if(form.elements.extraWordsCount){
+  form.elements.extraWordsCount.addEventListener('change',()=>{
+    try{calc();}catch(err){console.error(err);}
+  });
+}
+syncExtraWordsDetail();
+
+
+function syncStuffedAnimalDetail(){
+  const cb=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Stuffed Animal');
+  const detail=document.getElementById('stuffedAnimalDetail');
+  if(!cb || !detail) return;
+
+  detail.hidden=!cb.checked;
+
+  if(form.elements.stuffedAnimalText){
+    form.elements.stuffedAnimalText.required=cb.checked;
+    if(!cb.checked) form.elements.stuffedAnimalText.value='';
+  }
+}
+
+const stuffedAnimalCheckbox=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Stuffed Animal');
+if(stuffedAnimalCheckbox){
+  stuffedAnimalCheckbox.addEventListener('change',()=>{
+    syncStuffedAnimalDetail();
+    try{calc();}catch(err){console.error(err);}
+  });
+}
+syncStuffedAnimalDetail();
+
+
+function syncPhotoAddonDetail(){
+  const cb=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Photo Package');
+  const detail=document.getElementById('photoAddonDetail');
+  if(!cb || !detail) return;
+
+  detail.hidden=!cb.checked;
+
+  if(form.elements.photoAddon){
+    form.elements.photoAddon.required=cb.checked;
+    if(!cb.checked) form.elements.photoAddon.value='';
+  }
+}
+
+const photoAddonCheckbox=[...form.querySelectorAll('input[name="addons"]')].find(x=>x.value==='Photo Package');
+if(photoAddonCheckbox){
+  photoAddonCheckbox.addEventListener('change',()=>{
+    syncPhotoAddonDetail();
+    try{calc();}catch(err){console.error(err);}
+  });
+}
+syncPhotoAddonDetail();
