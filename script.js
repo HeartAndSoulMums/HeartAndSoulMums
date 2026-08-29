@@ -446,80 +446,91 @@ document.querySelectorAll('.select-package').forEach(btn=>{
 });
 
 function orderText(){
-  const d=new FormData(form), c=calc();
-  const add=addonChecks.filter(x=>x.checked).map(x=>{
-    if(x.value==='Extra Words') return `Extra Words — ${d.get('extraWordsCount')||1} × $7`;
-    return `${x.value} (+$${x.dataset.price})`;
-  });
-  const braid=form.elements.braid.options[form.elements.braid.selectedIndex].text;
-  const printed=form.elements.printedRibbon.options[form.elements.printedRibbon.selectedIndex].text;
-  const fileCount=form.elements.inspiration.files?.length || 0;
-  const thirdColor=packageColorCount(c.pkg.value)>=3
-    ? `${d.get('thirdColorName') || d.get('thirdColor')} (${d.get('thirdColor')})`
-    : 'Not included with selected package';
-  return `HEART & SOUL SIGNATURE MUMS — ORDER REQUEST
+  const d=new FormData(form);
+  const pkg=d.get('package') || '';
+  const selectedAddons=[...form.querySelectorAll('input[name="addons"]:checked')].map(x=>x.value);
 
-TIER
-${c.pkg.value} — ${c.pkg.value==='Showstopper' ? 'starting at ' : ''}${money(c.base)}
+  const val=name=>{
+    const v=d.get(name);
+    return v === null || v === undefined ? '' : String(v).trim();
+  };
 
-STRUCTURE
-Base length: ${packageStandardLength(c.pkg.value)}
-Length option: ${d.get('length')}
-Fullness: ${d.get('fullness')}
+  const selectedLabel=name=>{
+    const el=form.elements[name];
+    if(!el || !el.options || el.selectedIndex < 0) return '';
+    return el.options[el.selectedIndex]?.textContent?.trim() || '';
+  };
 
-COLORS + STYLE
-Standard color 1: ${d.get('primaryColorName') || d.get('primaryColor')} (${d.get('primaryColor')})
-Standard color 2: ${d.get('secondaryColorName') || d.get('secondaryColor')} (${d.get('secondaryColor')})
-Standard color 3: ${thirdColor}
-Filler / accent: ${d.get('accentColorName') || 'White'} (${d.get('accentColor')})
-Style: ${d.get('style')}
+  const lines=[
+    `Package: ${pkg || 'Not selected'}`,
+    `Length: ${selectedLabel('length') || 'Standard / Included'}`,
+    `Fullness: ${selectedLabel('fullness') || 'Standard / Included'}`,
+    '',
+    `School: ${val('schoolName') || 'Not provided'}`,
+    `Standard color 1: ${val('primaryColorName') || val('primaryColor') || 'Not provided'}`,
+    `Standard color 2: ${val('secondaryColorName') || val('secondaryColor') || 'Not provided'}`
+  ];
 
-STUDENT
-Name: ${d.get('studentName')}
-Name to put on ribbon: ${d.get('ribbonName') || '—'}
-School Name: ${d.get('schoolRibbonText') || '—'}
-Grade: ${d.get('grade')}
-Graduation year: ${d.get('gradYear') || '—'}
-Homecoming date: ${d.get('homecomingDate')}
+  const thirdColorField=document.getElementById('thirdColorField');
+  if(thirdColorField && !thirdColorField.hidden){
+    lines.push(`Standard color 3: ${val('thirdColorName') || val('thirdColor') || 'Not provided'}`);
+  }
 
-ACTIVITIES + PERSONALITY (CHARM DIRECTION)
-${d.get('activities') || '—'}
+  lines.push(`Filler / accent color: ${val('accentColorName') || val('accentColor') || 'White'}`);
 
+  const vibe=val('vibe');
+  if(vibe) lines.push(`Overall vibe: ${vibe}`);
 
-ADD-ONS
-${add.length ? add.join('\\n') : 'None selected'}
-LED color: ${addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? (d.get('ledColorName') || d.get('ledColor') || '—') : '—'}
-Charm details: ${addonChecks.find(x=>x.value==='Charm Package')?.checked ? (d.get('charmDetails') || '—') : '—'}
-Stuffed animal details: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalText') || '—') : '—'}
-Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordsCount')||1} word(s))` : '—'}
-Specialty braid: ${braid}
-Custom printed ribbon: ${printed}
-Printed Ribbon Bible Verse/Quote: ${d.get('ribbonText') || '—'}
+  const activities=val('activities');
+  if(activities) lines.push(`Activities / personality: ${activities}`);
 
-CUSTOM VISION
-${d.get('instructions') || '—'}
+  if(selectedAddons.length){
+    lines.push('', `Add-ons: ${selectedAddons.join(', ')}`);
+  }
 
-Inspiration photos selected: ${fileCount}
+  if(selectedAddons.includes('Stuffed Animal')){
+    lines.push(`Stuffed animal requested: ${val('stuffedAnimalText') || 'Not provided'}`);
+  }
 
-STUDENT REFERRAL
-Promo code: ${activePromo ? activePromo.code : 'None'}
-Referral student: ${activePromo ? activePromo.name : '—'}
-School: ${activePromo ? activePromo.school : '—'}
-Discount: ${activePromo ? money(c.discount) : '$0'}
+  if(selectedAddons.includes('Extra Words')){
+    const qty=val('extraWordsCount') || '1';
+    lines.push(`Extra words (${qty}): ${val('extraWordsText') || 'Not provided'}`);
+  }
 
-CUSTOMER
-Name: ${d.get('customerName')}
-Phone: ${d.get('phone')}
-Email: ${d.get('email')}
-Preferred contact: ${d.get('contactMethod')}
+  if(selectedAddons.includes('Photo Package')){
+    const file=form.elements.photoAddon?.files?.[0];
+    lines.push(`Photo: ${file ? file.name : 'No photo selected'}`);
+  }
 
-SUBTOTAL: ${money(c.subtotal)}
-PROMO DISCOUNT: ${activePromo ? '-' + money(c.discount) : '$0'}
-ESTIMATED TOTAL: ${money(c.total)}
-PAYMENT DUE IN FULL: ${money(c.total)}
+  const braid=selectedLabel('braid');
+  if(braid && !/^none$/i.test(braid)) lines.push(`Specialty braid: ${braid}`);
 
-Shipping is optional based on approval.
-Final design and pricing subject to review and approval.`;
+  const printedRibbon=selectedLabel('printedRibbon');
+  if(printedRibbon && !/^none$/i.test(printedRibbon)){
+    lines.push(`Printed ribbon: ${printedRibbon}`);
+    if(val('ribbonText')) lines.push(`Bible verse / quote: ${val('ribbonText')}`);
+  }
+
+  const instructions=val('customInstructions') || val('inspirationNotes') || val('notes');
+  if(instructions) lines.push('', `Custom instructions: ${instructions}`);
+
+  const customerName=val('customerName') || val('name');
+  const phone=val('phone');
+  const email=val('email');
+  if(customerName || phone || email){
+    lines.push('', 'Customer contact:');
+    if(customerName) lines.push(customerName);
+    if(phone) lines.push(phone);
+    if(email) lines.push(email);
+  }
+
+  const promo=val('promoCode');
+  if(promo) lines.push('', `Student promo code: ${promo}`);
+
+  const total=document.getElementById('totalPrice')?.textContent?.trim();
+  if(total) lines.push('', `Estimated total: ${total}`);
+
+  return lines.join('\\n');
 }
 
 const dialog=document.getElementById('orderDialog');
