@@ -26,3 +26,27 @@ dialog{width:min(1100px,calc(100% - 28px));max-height:92vh;overflow:auto;border:
   opacity:.65;
   cursor:wait;
 }
+
+
+.order-photo-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:180px;
+  padding:12px;
+  border:1px solid #eadfd9;
+  border-radius:16px;
+  background:#fffaf7;
+}
+.order-photo{
+  display:block;
+  width:100%;
+  max-width:560px;
+  max-height:560px;
+  object-fit:contain;
+  border-radius:12px;
+}
+.photo-loading,.photo-error{
+  color:#705f59;
+  font-size:.95rem;
+}

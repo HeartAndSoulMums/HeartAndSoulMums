@@ -97,6 +97,23 @@ export default async(request)=>{
         return respond(200,{orders:results,build:"LOGIN-FIX"});
       }
 
+      if(body.action==="photo"){
+        const orderNumber=String(body.orderNumber||"").trim();
+        if(!orderNumber)return respond(400,{error:"Missing order number."});
+
+        const key=`photo:${orderNumber}`;
+        const base64=await deadline(s.get(key,{type:"text",consistency:"strong"}),6000,"Photo read");
+        if(!base64)return respond(404,{error:"Photo not found."});
+
+        const entry=await deadline(s.getMetadata(key),6000,"Photo metadata");
+        const contentType=entry?.metadata?.contentType||"image/jpeg";
+        return respond(200,{
+          ok:true,
+          dataUrl:`data:${contentType};base64,${base64}`,
+          fileName:entry?.metadata?.fileName||""
+        });
+      }
+
       if(body.action!=="status") return respond(400,{error:"Invalid action."});
       const orderNumber=String(body.orderNumber||"").trim();
       const status=String(body.status||"").trim();

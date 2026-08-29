@@ -122,6 +122,12 @@ async function api(action="list",body={}){
     throw err;
   }finally{clearTimeout(timer)}
 }
+
+async function loadOrderPhoto(orderNumber){
+  const data=await api("photo",{orderNumber});
+  return data?.dataUrl||"";
+}
+
 async function runHealth(){
   const s=$("#loginStatus");
   try{
@@ -177,6 +183,7 @@ Custom printed ribbon: ${esc(d.printedRibbon||"None")}
 Printed Ribbon Bible Verse/Quote: ${esc(d.ribbonText||"—")}<br>
 Stuffed Animal Details: ${esc(d.stuffedAnimalText||"—")}<br>
 Photo upload: ${esc(d.photoAddonFile||"—")}</div></section>
+${d.hasPhoto?`<section class="card"><h3>Uploaded Photo</h3><div id="orderPhotoWrap" class="order-photo-wrap"><div class="photo-loading">Loading photo…</div></div></section>`:""}
 <section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div></section></div>
 <aside class="detail-side"><section class="card"><h3>Order Status</h3><select class="status-select" id="detailStatus">${STATUS.map(s=>`<option ${s===st?"selected":""}>${esc(s)}</option>`).join("")}</select></section><section class="card"><h3>Customer</h3><div class="copytext"><strong>${esc(customerName(o))}</strong>
 ${esc(phoneDisplay(d.phone))}
@@ -186,6 +193,17 @@ Student: ${esc(d.referralStudent||"—")}
 School: ${esc(d.referralSchool||"—")}</div></section>`:""}<section class="card"><h3>Submission</h3><div class="copytext">Received: ${esc(dateTime(o.createdAt))}
 Order #: ${esc(o.orderNumber)}</div></section></aside></div></div>`;
   $("#orderDialog").showModal();$("#printOrder").addEventListener("click",()=>window.print());
+  if(d.hasPhoto){
+    const wrap=$("#orderPhotoWrap");
+    loadOrderPhoto(o.orderNumber).then(src=>{
+      if(!wrap)return;
+      wrap.innerHTML=src
+        ? `<img class="order-photo" src="${src}" alt="Customer uploaded mum photo">`
+        : `<div class="photo-error">Photo could not be loaded.</div>`;
+    }).catch(err=>{
+      if(wrap)wrap.innerHTML=`<div class="photo-error">${esc(err.message||"Photo could not be loaded.")}</div>`;
+    });
+  }
   $("#detailStatus").addEventListener("change",async e=>{const next=e.target.value,prior=o.status||"New";e.target.disabled=true;try{await api("status",{orderNumber:o.orderNumber,status:next});o.status=next;render();$("#orderDialog").close();openOrder(o.orderNumber)}catch(err){e.target.value=prior;alert("Could not update status: "+err.message)}finally{e.target.disabled=false}})
 }
 $("#loginForm").addEventListener("submit",login);

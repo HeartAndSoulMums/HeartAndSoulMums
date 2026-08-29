@@ -9,6 +9,13 @@ function respond(status, body) {
 function clean(v, max=5000) {
   return String(v ?? "").slice(0, max);
 }
+function parsePhotoDataUrl(v){
+  const s=String(v||"");
+  const m=s.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
+  if(!m)return null;
+  if(m[2].length>8_000_000)throw new Error("Uploaded photo is too large.");
+  return {contentType:m[1],base64:m[2]};
+}
 
 export default async (request) => {
   if (request.method !== "POST") return respond(405,{error:"Method not allowed"});
@@ -55,14 +62,24 @@ export default async (request) => {
         contactMethod:clean(body.contactMethod,80), estimatedTotal:Number(body.estimatedTotal||0),
         promoCodeApplied:clean(body.promoCodeApplied,100),
         referralStudent:clean(body.referralStudent,200),
-        referralSchool:clean(body.referralSchool,200)
+        referralSchool:clean(body.referralSchool,200),
+        photoAddonFile:clean(body.photoAddonFile,300),
+        hasPhoto:Boolean(body.photoDataUrl)
       }
     };
 
     const store=getStore("heart-and-soul-orders");
+
+    const photo=parsePhotoDataUrl(body.photoDataUrl);
+    if(photo){
+      await store.set(`photo:${orderNumber}`,photo.base64,{
+        metadata:{contentType:photo.contentType,fileName:clean(body.photoAddonFile,300)}
+      });
+    }
+
     await store.setJSON(`order:${orderNumber}`,order);
 
-    return respond(200,{ok:true,orderNumber});
+    return respond(200,{ok:true,orderNumber,photoStored:Boolean(photo)});
   }catch(err){
     console.error("save-order",err);
     return respond(500,{error:err?.message||"Could not save order."});
