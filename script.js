@@ -2,7 +2,7 @@ let SITE_CONFIG = null;
 let PROMO_CODES = {};
 let activePromo = null;
 
-const FALLBACK_CONFIG = {"hero":{"eyebrow":"PREMIUM • PERSONALIZED • ONE OF A KIND","title_before":"No two mums","title_emphasis":"should be the same.","body":"Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."},"difference":{"heading":"A wearable keepsake of their high-school experience.","body":"Names, class year, school pride, activities, charms, photos, custom ribbon and personal details can all become part of the design.","tagline":"Don’t see it? Ask us. If we can make it, we’ll put it on your mum."},"packages":{"Mini Mum":{"price":65,"label":"SMALL + SWEET","description":"A 10-inch mini mum with one 6-inch flower, 2 colors + filler, 3 charms, Homecoming lettering and name lettering."},"Garter":{"price":115,"label":"COMPACT TRADITION","description":"A 12-inch garter with one 6-inch flower, 2 standard colors + filler, 3 charms, Homecoming lettering, name lettering and class year."},"Classic":{"price":195,"label":"TRADITIONAL FAVORITE","description":"A 24-inch traditional mum with one 7.5-inch flower, 2 standard colors + filler, 5 charms, Homecoming/name/class-year lettering and 1 specialty chain or braid."},"Signature":{"price":260,"label":"ELEVATED + PERSONAL","description":"A 24-inch elevated mum with one 9-inch flower, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Signature Plus":{"price":325,"label":"FULLER STATEMENT DESIGN","description":"A 24-inch statement mum built around four 6-inch flowers, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Showstopper":{"price":500,"label":"FULLY CUSTOM • QUOTED","description":"Starting at $500. Fully custom and quoted based on size, flowers, ribbon, specialty work, charms and overall design complexity."}},"pricing":{"lengths":{"Standard":0,"Long":18,"Extra Long":30},"fullness":{"Standard":0,"Xtra Full":20},"addons":{"Light It Up Package":35,"Bling Package":25,"Feather Package":15,"Charm Package":15,"Photo Package":35,"Sweetheart Package":15,"Stuffed Animal":15,"Extra Words":0},"braids":{"None":0,"Simple Braid":15,"Thick Braid":25},"printed_ribbon":{"None":0,"1 custom ribbon":7,"2 custom ribbons":14,"3 custom ribbons":21},"school_name_ribbon":7,"extra_word_each":7},"referral":{"discount_percent":10,"reward_orders":5,"reward_text":"Free Classic mum after 5 fully paid, non-refunded qualifying orders.","codes":[{"code":"KENNEDY10","student":"Kennedy","school":"","active":true}]},"senior":{"heading":"Four years. One final homecoming.","body":"Senior mums can incorporate their name, Class of 2027, school pride, activities, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."},"policies":[{"title":"Payment in Full","body":"Full payment is required before production begins and confirms the order."},{"title":"Custom Order Refunds","body":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."},{"title":"Design Changes","body":"Changes after materials or design are approved may require a change fee and are subject to material availability."},{"title":"Rush Orders","body":"Rush orders may carry an additional fee and are accepted only when schedule and materials allow."}],"rush":[{"window":"14+ days","fee":"Standard pricing"},{"window":"7–13 days","fee":"+15%"},{"window":"4–6 days","fee":"+25%"},{"window":"72 hours or less","fee":"+40–50% if accepted"}],"gallery":[],"footer_text":"Custom homecoming mums made with heart and designed for spirit.","branding":{"business_name":"Heart & Soul Signature Mums","logo":"/heart-and-soul-logo.jpeg","tagline":"Made with Heart. Designed for Spirit.","phone":"","email":"","instagram":"","facebook":"","service_area":"Local pickup • Shipping optional based on approval"},"announcement":{"enabled":true,"text":"Now accepting custom Homecoming orders — reserve your spot early."},"ordering":{"accepting_orders":true,"closed_message":"We are currently at capacity for new orders. Please check back soon.","minimum_lead_days":14,"pickup_instructions":"Pickup details and payment instructions are confirmed after your order is reviewed. Shipping is optional based on approval.","payment_policy":"Full payment is required before production begins.","refund_policy":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."}};
+const FALLBACK_CONFIG = {"hero":{"eyebrow":"PREMIUM • PERSONALIZED • ONE OF A KIND","title_before":"No two mums","title_emphasis":"should be the same.","body":"Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."},"difference":{"heading":"A wearable keepsake of their high-school experience.","body":"Names, class year, school pride, activities, charms, photos, custom ribbon and personal details can all become part of the design.","tagline":"Don’t see it? Ask us. If we can make it, we’ll put it on your mum."},"packages":{"Mini Mum":{"price":65,"label":"SMALL + SWEET","description":"A 10-inch mini mum with one 6-inch flower, 2 colors + filler, 3 charms, Homecoming lettering and name lettering."},"Garter":{"price":115,"label":"COMPACT TRADITION","description":"A 12-inch garter with one 6-inch flower, 2 standard colors + filler, 3 charms, Homecoming lettering, name lettering and class year."},"Classic":{"price":195,"label":"TRADITIONAL FAVORITE","description":"A 24-inch traditional mum with one 7.5-inch flower, 2 standard colors + filler, 5 charms, Homecoming/name/class-year lettering and 1 specialty chain or braid."},"Signature":{"price":260,"label":"ELEVATED + PERSONAL","description":"A 24-inch elevated mum with one 9-inch flower, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Signature Plus":{"price":325,"label":"FULLER STATEMENT DESIGN","description":"A 24-inch statement mum built around four 6-inch flowers, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Showstopper":{"price":500,"label":"FULLY CUSTOM • QUOTED","description":"Starting at $500. Fully custom and quoted based on size, flowers, ribbon, specialty work, charms and overall design complexity."}},"pricing":{"lengths":{"Standard":0,"Long":18,"Extra Long":30},"fullness":{"Standard":0,"Xtra Full":20},"addons":{"Light It Up Package":35,"Bling Package":25,"Feather Package":15,"Charm Package":15,"Photo Package":35,"Sweetheart Package":15,"Stuffed Animal":15,"Extra Words":0},"braids":{"None":0,"Simple Braid":15,"Thick Braid":25},"printed_ribbon":{"None":0,"Bible Verse/Quote Ribbon":7},"school_name_ribbon":0,"extra_word_each":7},"referral":{"discount_percent":10,"reward_orders":5,"reward_text":"Free Classic mum after 5 fully paid, non-refunded qualifying orders.","codes":[{"code":"KENNEDY10","student":"Kennedy","school":"","active":true}]},"senior":{"heading":"Four years. One final homecoming.","body":"Senior mums can incorporate their name, Class of 2027, school pride, activities, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."},"policies":[{"title":"Payment in Full","body":"Full payment is required before production begins and confirms the order."},{"title":"Custom Order Refunds","body":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."},{"title":"Design Changes","body":"Changes after materials or design are approved may require a change fee and are subject to material availability."},{"title":"Rush Orders","body":"Rush orders may carry an additional fee and are accepted only when schedule and materials allow."}],"rush":[{"window":"14+ days","fee":"Standard pricing"},{"window":"7–13 days","fee":"+15%"},{"window":"4–6 days","fee":"+25%"},{"window":"72 hours or less","fee":"+40–50% if accepted"}],"gallery":[],"footer_text":"Custom homecoming mums made with heart and designed for spirit.","branding":{"business_name":"Heart & Soul Signature Mums","logo":"/heart-and-soul-logo.jpeg","tagline":"Made with Heart. Designed for Spirit.","phone":"","email":"","instagram":"","facebook":"","service_area":"Local pickup • Shipping optional based on approval"},"announcement":{"enabled":true,"text":"Now accepting custom Homecoming orders — reserve your spot early."},"ordering":{"accepting_orders":true,"closed_message":"We are currently at capacity for new orders. Please check back soon.","minimum_lead_days":14,"pickup_instructions":"Pickup details and payment instructions are confirmed after your order is reviewed. Shipping is optional based on approval.","payment_policy":"Full payment is required before production begins.","refund_policy":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."}};
 
 
 function normalizeOwnerConfig(cfg){
@@ -326,7 +326,7 @@ promoInput.addEventListener('keydown',e=>{
 document.querySelectorAll('.select-package').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const r=packageRadios.find(x=>x.value===btn.dataset.package);
-    r.checked=true;calc();document.getElementById('customize').scrollIntoView({behavior:'smooth'});
+    r.checked=true;calc();document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
   });
 });
 
@@ -362,7 +362,7 @@ Style: ${d.get('style')}
 STUDENT
 Name: ${d.get('studentName')}
 Name to put on ribbon: ${d.get('ribbonName') || '—'}
-Add School Name on Ribbon (+$7): ${d.get('schoolRibbonText') || '—'}
+School Name: ${d.get('schoolRibbonText') || '—'}
 Grade: ${d.get('grade')}
 Graduation year: ${d.get('gradYear') || '—'}
 Homecoming date: ${d.get('homecomingDate')}
@@ -370,7 +370,6 @@ Homecoming date: ${d.get('homecomingDate')}
 ACTIVITIES + PERSONALITY (CHARM DIRECTION)
 ${d.get('activities') || '—'}
 
-Bible verse / quote: ${d.get('quote') || '—'}
 
 ADD-ONS
 ${add.length ? add.join('\\n') : 'None selected'}
@@ -380,7 +379,7 @@ Stuffed animal details: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.check
 Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty')||1} word(s))` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
-Printed ribbon wording: ${d.get('ribbonText') || '—'}
+Printed Ribbon Bible Verse/Quote: ${d.get('ribbonText') || '—'}
 
 CUSTOM VISION
 ${d.get('instructions') || '—'}
@@ -457,7 +456,6 @@ function buildPrivateOrderPayload(orderNo,c){
     gradYear:d.get('gradYear'),
     homecomingDate:d.get('homecomingDate'),
     activities:d.get('activities'),
-    quote:d.get('quote'),
     addons:addonChecks.filter(x=>x.checked).map(x=>x.value),
     ledColor:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColor') : '',
     ledColorName:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColorName') : '',
@@ -469,6 +467,9 @@ function buildPrivateOrderPayload(orderNo,c){
     printedRibbon:d.get('printedRibbon'),
     ribbonText:d.get('ribbonText'),
     instructions:d.get('instructions'),
+    photoAddonFile:addonChecks.find(x=>x.value==='Photo Package')?.checked
+      ? (form.elements.photoAddon?.files?.[0]?.name || '')
+      : '',
     inspirationCount:form.elements.inspiration.files?.length||0,
     customerName:d.get('customerName'),
     phone:d.get('phone'),
@@ -638,8 +639,7 @@ function buildOwnerOrderView(){
   document.getElementById('ownerPersonal').textContent =
 `Activities + personality (charm direction):
 ${d.get('activities') || '—'}
-
-Bible verse / quote: ${d.get('quote') || '—'}`;
+`;
 
   document.getElementById('ownerUpgrades').textContent =
 `Add-ons:
@@ -651,7 +651,7 @@ Stuffed animal: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.
 Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty') || 1})` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
-Printed ribbon wording: ${d.get('ribbonText') || '—'}
+Printed Ribbon Bible Verse/Quote: ${d.get('ribbonText') || '—'}
 Inspiration photos selected: ${fileCount}`;
 
   document.getElementById('ownerInstructions').textContent=d.get('instructions') || 'No additional instructions provided.';

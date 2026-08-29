@@ -194,7 +194,7 @@
           </div>
         </div>
 
-        <div class="form-card">
+        <div class="form-card" id="step2">
           <div class="step-number">2</div>
           <div class="form-content">
             <h3>Length + fullness</h3>
@@ -253,7 +253,7 @@
             <div class="field-grid">
               <label>Student name<input type="text" name="studentName" required placeholder="First + last name"></label>
               <label>Name to put on ribbon<input type="text" name="ribbonName" placeholder="Name exactly as you want it shown"></label>
-              <label>Add School Name on Ribbon — +$7
+              <label>School Name
                 <input type="text" name="schoolRibbonText" placeholder="Optional school name">
               </label>
               <label>Grade
@@ -272,9 +272,6 @@
             <label class="full-label">Sports, clubs, activities + personality
               <textarea name="activities" rows="5" placeholder="Football, volleyball, cheer, dance, band, color guard, FFA, ROTC, NHS, theater, choir, hobbies, personality, interests, etc."></textarea>
             </label>
-            <div class="field-grid">
-              <label>Bible verse / quote<input type="text" name="quote" placeholder="Optional"></label>
-            </div>
           </div>
         </div>
 
@@ -288,10 +285,10 @@
               <label class="addon"><input type="checkbox" name="addons" value="Bling Package" data-price="25"><span><strong>Bling</strong><small>Rhinestones + sparkle • +$25</small></span></label>
               <label class="addon"><input type="checkbox" name="addons" value="Feather Package" data-price="15"><span><strong>Feather Package</strong><small>1 feather boa • +$15</small></span></label>
               <label class="addon"><input type="checkbox" name="addons" value="Charm Package" data-price="15" data-detail="charmDetail"><span><strong>Charm Package</strong><small>Extra Themed Charms • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Photo Package" data-price="35"><span><strong>Photo</strong><small>1 photo • +$35</small></span></label>
+              <label class="addon"><input type="checkbox" name="addons" value="Photo Package" data-price="35" data-detail="photoAddonDetail"><span><strong>Photo</strong><small>1 photo • +$35</small></span></label>
               <label class="addon"><input type="checkbox" name="addons" value="Sweetheart Package" data-price="15"><span><strong>Sweetheart Package</strong><small>Couple names + hearts • +$15</small></span></label>
               <label class="addon"><input type="checkbox" name="addons" value="Stuffed Animal" data-price="15" data-detail="stuffedAnimalDetail"><span><strong>Stuffed Animal</strong><small>Custom stuffed animal • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Extra Words" data-price="0" data-detail="extraWordsDetail"><span><strong>Extra Words</strong><small>$7 each</small></span></label>
+              <label class="addon"><input type="checkbox" name="addons" value="Extra Words" data-price="0" data-detail="extraWordsDetail"><span><strong>Extra Words</strong><small>Additional custom wording</small></span></label>
             </div>
 
             <div id="ledColorDetail" class="conditional-detail" hidden>
@@ -304,6 +301,14 @@
                 <textarea name="charmDetails" rows="3" placeholder="What themed charms should we look for?"></textarea>
               </label>
             </div>
+
+            <div id="photoAddonDetail" class="conditional-detail" hidden>
+              <label>Upload Photo
+                <input type="file" name="photoAddon" accept="image/*">
+              </label>
+              <p class="helper">Choose the photo you want incorporated into the mum.</p>
+            </div>
+
             <div id="stuffedAnimalDetail" class="conditional-detail" hidden>
               <label>Stuffed animal description
                 <textarea name="stuffedAnimalDetails" rows="3" placeholder="Animal, character, color, theme, etc."></textarea>
@@ -318,7 +323,7 @@
                   <input type="text" name="extraWordsText" placeholder="List the exact word(s)">
                 </label>
               </div>
-              <p class="helper">$7 per extra word.</p>
+              <p class="helper">Extra words are $7 per word.</p>
             </div>
 
             <h4 class="subhead">Specialty ribbon + braids</h4>
@@ -330,17 +335,15 @@
                   <option value="Thick Braid" data-price="25">Thick Braid — +$25</option>
                 </select>
               </label>
-              <label>Custom printed ribbon
+              <label>Printed Ribbon Bible Verse/Quote
                 <select name="printedRibbon" class="priced-select">
                   <option value="None" data-price="0">None</option>
-                  <option value="1 custom ribbon" data-price="7">1 custom ribbon — +$7</option>
-                  <option value="2 custom ribbons" data-price="14">2 custom ribbons — +$14</option>
-                  <option value="3 custom ribbons" data-price="21">3 custom ribbons — +$21</option>
+                  <option value="Bible Verse/Quote Ribbon" data-price="7">Add printed Bible verse/quote ribbon — +$7</option>
                 </select>
               </label>
             </div>
-            <label class="full-label">Printed ribbon wording
-              <input type="text" name="ribbonText" placeholder="Enter exact wording for any custom printed ribbon">
+            <label class="full-label">Printed Ribbon Bible Verse/Quote
+              <input type="text" name="ribbonText" placeholder="Enter the exact Bible verse or quote">
             </label>
           </div>
         </div>

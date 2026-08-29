@@ -166,7 +166,6 @@ function openOrder(id){
 <section class="card"><h3>Colors</h3><div class="colors"><div class="color-chip"><span class="swatch" style="background:${esc(phex)}"></span><strong>Color 1:</strong> ${esc(pname)} • <code>${esc(String(phex).toUpperCase())}</code></div><div class="color-chip"><span class="swatch" style="background:${esc(shex)}"></span><strong>Color 2:</strong> ${esc(sname)} • <code>${esc(String(shex).toUpperCase())}</code></div>${d.thirdColorName||d.thirdColor?`<div class="color-chip"><span class="swatch" style="background:${esc(thex)}"></span><strong>Color 3:</strong> ${esc(tname)} • <code>${esc(String(thex).toUpperCase())}</code></div>`:""}<div class="color-chip"><span class="swatch" style="background:${esc(ahex)}"></span><strong>Filler / Accent:</strong> ${esc(aname)} • <code>${esc(String(ahex).toUpperCase())}</code></div></div></section>
 <section class="card"><h3>Activities + Personality</h3><div class="copytext">Charm direction: ${esc(d.activities||"—")}
 
-Bible verse / quote: ${esc(d.quote||"—")}</div></section>
 <section class="card"><h3>Add-ons + Specialty Work</h3><div class="copytext">${addons.length?addons.map(x=>"• "+x).join("\n"):"No add-ons selected."}
 
 LED color: ${esc(d.ledColorName||"—")}
@@ -175,7 +174,8 @@ Stuffed animal: ${esc(d.stuffedAnimalDetails||"—")}
 Extra words: ${esc(d.extraWordsText||"—")} (${esc(d.extraWordQty||0)})
 Specialty braid: ${esc(d.braid||"None")}
 Custom printed ribbon: ${esc(d.printedRibbon||"None")}
-Printed wording: ${esc(d.ribbonText||"—")}</div></section>
+Printed Ribbon Bible Verse/Quote: ${esc(d.ribbonText||"—")}<br>
+Photo upload: ${esc(d.photoAddonFile||"—")}</div></section>
 <section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div></section></div>
 <aside class="detail-side"><section class="card"><h3>Order Status</h3><select class="status-select" id="detailStatus">${STATUS.map(s=>`<option ${s===st?"selected":""}>${esc(s)}</option>`).join("")}</select></section><section class="card"><h3>Customer</h3><div class="copytext"><strong>${esc(customerName(o))}</strong>
 ${esc(phoneDisplay(d.phone))}

@@ -69,11 +69,9 @@
     },
     "printed_ribbon": {
       "None": 0,
-      "1 custom ribbon": 7,
-      "2 custom ribbons": 14,
-      "3 custom ribbons": 21
+      "Bible Verse/Quote Ribbon": 7
     },
-    "school_name_ribbon": 7,
+    "school_name_ribbon": 0,
     "extra_word_each": 7
   },
   "referral": {
