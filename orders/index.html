@@ -57,7 +57,7 @@
         <section class="stats" id="stats"></section>
 
         <section class="controls">
-          <input id="searchInput" type="search" placeholder="Search student, customer, school, order #, promo code…">
+          <input id="searchInput" type="search" placeholder="Search student, customer, package, order #, promo code…">
           <select id="statusFilter">
             <option value="All">All statuses</option>
             <option>New</option>
@@ -153,28 +153,30 @@ function renderStats(){
 }
 function render(){
   renderStats();const q=$("#searchInput").value.trim().toLowerCase(),sf=$("#statusFilter").value;
-  filtered=orders.filter(o=>{const d=o.data||{},hay=[o.orderNumber,studentName(o),customerName(o),d.school,d.promoCodeApplied,d.email,d.phone].join(" ").toLowerCase();return(!q||hay.includes(q))&&(sf==="All"||(o.status||"New")===sf)});
+  filtered=orders.filter(o=>{const d=o.data||{},hay=[o.orderNumber,studentName(o),customerName(o),d.package,d.schoolRibbonText,d.promoCodeApplied,d.email,d.phone].join(" ").toLowerCase();return(!q||hay.includes(q))&&(sf==="All"||(o.status||"New")===sf)});
   $("#emptyState").hidden=filtered.length!==0;
-  $("#ordersList").innerHTML=filtered.map(o=>{const d=o.data||{},st=o.status||"New";return `<article class="order-row" data-id="${esc(o.orderNumber)}" tabindex="0"><div class="order-id"><strong>${esc(o.orderNumber)}</strong><span>${esc(dateTime(o.createdAt))}</span></div><div class="customer"><strong>${esc(studentName(o))}</strong><span>Customer: ${esc(customerName(o))}</span></div><div class="school"><strong>${esc(val(d,"school"))}</strong><span>${esc(val(d,"grade"))}</span></div><div class="amount">${money(orderTotal(o))}</div><div class="status-wrap"><span class="status-pill ${statusClass(st)}">${esc(st)}</span></div><div class="arrow">›</div></article>`}).join("");
+  $("#ordersList").innerHTML=filtered.map(o=>{const d=o.data||{},st=o.status||"New";return `<article class="order-row" data-id="${esc(o.orderNumber)}" tabindex="0"><div class="order-id"><strong>${esc(o.orderNumber)}</strong><span>${esc(dateTime(o.createdAt))}</span></div><div class="customer"><strong>${esc(studentName(o))}</strong><span>Customer: ${esc(customerName(o))}</span></div><div class="school"><strong>${esc(val(d,"package"))}</strong><span>${esc(val(d,"grade"))}</span></div><div class="amount">${money(orderTotal(o))}</div><div class="status-wrap"><span class="status-pill ${statusClass(st)}">${esc(st)}</span></div><div class="arrow">›</div></article>`}).join("");
   document.querySelectorAll(".order-row").forEach(el=>{const open=()=>openOrder(el.dataset.id);el.addEventListener("click",open);el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}})})
 }
 function openOrder(id){
-  const o=orders.find(x=>x.orderNumber===id);if(!o)return;const d=o.data||{},addons=Array.isArray(d.addons)?d.addons:[],phex=d.primaryColor||"#fff",shex=d.secondaryColor||"#fff",pname=colorName(d.primaryColorName,phex),sname=colorName(d.secondaryColorName,shex),promo=d.promoCodeApplied||"",phone=String(d.phone||"").replace(/\D/g,""),st=o.status||"New";
-  $("#orderDetail").innerHTML=`<div class="detail"><div class="detail-top"><div><span class="eyebrow">ORDER ${esc(o.orderNumber)}</span><h2>${esc(studentName(o))}</h2><div class="detail-sub">${esc(val(d,"school"))} • ${esc(val(d,"grade"))} • Homecoming ${esc(dateOnly(d.homecomingDate))}</div></div><span class="status-pill ${statusClass(st)}">${esc(st)}</span></div><div class="detail-actions">${phone?`<a href="tel:${esc(phone)}">Call ${esc(phoneDisplay(d.phone))}</a><a href="sms:${esc(phone)}">Text Customer</a>`:""}${d.email?`<a href="mailto:${esc(d.email)}">Email Customer</a>`:""}<button class="print" id="printOrder">Print Order Sheet</button></div><div class="detail-layout"><div class="detail-main">
-<section class="card"><h3>Student + School</h3><div class="field-grid">${field("Student",d.studentName)}${field("Nickname",d.nickname)}${field("School",d.school)}${field("Mascot",d.mascot)}${field("Grade",d.grade)}${field("Graduation year",d.gradYear)}${field("Jersey / player #",d.number)}${field("Homecoming",dateOnly(d.homecomingDate))}</div></section>
-<section class="card"><h3>Mum Build</h3><div class="field-grid">${field("Package",d.package)}${field("Size",d.size)}${field("Length",d.length)}${field("Fullness",d.fullness)}${field("Style",d.style)}</div></section>
-<section class="card"><h3>Colors</h3><div class="colors"><div class="color-chip"><span class="swatch" style="background:${esc(phex)}"></span><strong>Primary:</strong> ${esc(pname)} • <code>${esc(String(phex).toUpperCase())}</code></div><div class="color-chip"><span class="swatch" style="background:${esc(shex)}"></span><strong>Secondary:</strong> ${esc(sname)} • <code>${esc(String(shex).toUpperCase())}</code></div><div class="color-chip"><strong>Accent:</strong> ${esc(d.accentColor||"None")}</div></div></section>
-<section class="card"><h3>Activities + Personal Details</h3><div class="copytext">Sports / clubs / activities: ${esc(d.activities||"—")}
+  const o=orders.find(x=>x.orderNumber===id);if(!o)return;const d=o.data||{},addons=Array.isArray(d.addons)?d.addons:[],phex=d.primaryColor||"#fff",shex=d.secondaryColor||"#fff",thex=d.thirdColor||"#fff",ahex=d.accentColor||"#fff",pname=colorName(d.primaryColorName,phex),sname=colorName(d.secondaryColorName,shex),tname=colorName(d.thirdColorName,thex),aname=colorName(d.accentColorName,ahex),promo=d.promoCodeApplied||"",phone=String(d.phone||"").replace(/\D/g,""),st=o.status||"New";
+  $("#orderDetail").innerHTML=`<div class="detail"><div class="detail-top"><div><span class="eyebrow">ORDER ${esc(o.orderNumber)}</span><h2>${esc(studentName(o))}</h2><div class="detail-sub">${esc(val(d,"package"))} • ${esc(val(d,"grade"))} • Homecoming ${esc(dateOnly(d.homecomingDate))}</div></div><span class="status-pill ${statusClass(st)}">${esc(st)}</span></div><div class="detail-actions">${phone?`<a href="tel:${esc(phone)}">Call ${esc(phoneDisplay(d.phone))}</a><a href="sms:${esc(phone)}">Text Customer</a>`:""}${d.email?`<a href="mailto:${esc(d.email)}">Email Customer</a>`:""}<button class="print" id="printOrder">Print Order Sheet</button></div><div class="detail-layout"><div class="detail-main">
+<section class="card"><h3>Student + Ribbon</h3><div class="field-grid">${field("Student",d.studentName)}${field("Name on ribbon",d.ribbonName||d.nickname)}${field("School name on ribbon",d.schoolRibbonText||d.school)}${field("Grade",d.grade)}${field("Graduation year",d.gradYear)}${field("Homecoming",dateOnly(d.homecomingDate))}</div></section>
+<section class="card"><h3>Mum Build</h3><div class="field-grid">${field("Package",d.package)}${field("Base length",d.baseLength)}${field("Length option",d.length)}${field("Fullness",d.fullness)}${field("Style",d.style)}</div></section>
+<section class="card"><h3>Colors</h3><div class="colors"><div class="color-chip"><span class="swatch" style="background:${esc(phex)}"></span><strong>Color 1:</strong> ${esc(pname)} • <code>${esc(String(phex).toUpperCase())}</code></div><div class="color-chip"><span class="swatch" style="background:${esc(shex)}"></span><strong>Color 2:</strong> ${esc(sname)} • <code>${esc(String(shex).toUpperCase())}</code></div>${d.thirdColorName||d.thirdColor?`<div class="color-chip"><span class="swatch" style="background:${esc(thex)}"></span><strong>Color 3:</strong> ${esc(tname)} • <code>${esc(String(thex).toUpperCase())}</code></div>`:""}<div class="color-chip"><span class="swatch" style="background:${esc(ahex)}"></span><strong>Filler / Accent:</strong> ${esc(aname)} • <code>${esc(String(ahex).toUpperCase())}</code></div></div></section>
+<section class="card"><h3>Activities + Personality</h3><div class="copytext">Charm direction: ${esc(d.activities||"—")}
 
-Favorite things: ${esc(d.favorites||"—")}
-Favorite song: ${esc(d.song||"—")}
-Bible verse / quote: ${esc(d.quote||"—")}
-Special date / relationship detail: ${esc(d.specialDate||"—")}</div></section>
-<section class="card"><h3>Upgrades</h3><div class="copytext">${addons.length?addons.map(x=>"• "+x).join("\n"):"No premium packages selected."}
+<section class="card"><h3>Add-ons + Specialty Work</h3><div class="copytext">${addons.length?addons.map(x=>"• "+x).join("\n"):"No add-ons selected."}
 
+LED color: ${esc(d.ledColorName||"—")}
+Charm details: ${esc(d.charmDetails||"—")}
+Stuffed animal: ${esc(d.stuffedAnimalDetails||"—")}
+Extra words: ${esc(d.extraWordsText||"—")} (${esc(d.extraWordQty||0)})
 Specialty braid: ${esc(d.braid||"None")}
 Custom printed ribbon: ${esc(d.printedRibbon||"None")}
-Printed wording: ${esc(d.ribbonText||"—")}</div></section>
+Printed Ribbon Bible Verse/Quote: ${esc(d.ribbonText||"—")}<br>
+Stuffed Animal Details: ${esc(d.stuffedAnimalText||"—")}<br>
+Photo upload: ${esc(d.photoAddonFile||"—")}</div></section>
 <section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div></section></div>
 <aside class="detail-side"><section class="card"><h3>Order Status</h3><select class="status-select" id="detailStatus">${STATUS.map(s=>`<option ${s===st?"selected":""}>${esc(s)}</option>`).join("")}</select></section><section class="card"><h3>Customer</h3><div class="copytext"><strong>${esc(customerName(o))}</strong>
 ${esc(phoneDisplay(d.phone))}
