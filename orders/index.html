@@ -172,8 +172,9 @@ function render(){
 }
 function displayLength(d){
   const choice=String(d?.length||"Standard").trim();
-  if(choice==="Long") return "30 in";
+
   if(choice==="Extra Long") return "36 in";
+  if(choice==="Long") return "30 in";
 
   const pkg=String(d?.package||"").trim();
   if(pkg==="Mini Mum") return "10 in";

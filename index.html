@@ -847,6 +847,9 @@
   let submitting = false;
 
   const field = name => {
+    const explicit = form.querySelector(`select[name="${name}"], input[name="${name}"]:checked, input[name="${name}"], textarea[name="${name}"]`);
+    if (explicit) return (explicit.value ?? '').toString().trim();
+
     const el = form.elements[name];
     if (!el) return '';
     if (typeof RadioNodeList !== 'undefined' && el instanceof RadioNodeList) return el.value || '';
@@ -871,9 +874,12 @@
   };
 
   const selectedLengthChoice = () => {
-    const select = form.elements.length;
+    const select = form.querySelector('select[name="length"].priced-select') ||
+                   form.querySelector('select[name="length"]');
     if (!select) return 'Standard';
-    return select.value || 'Standard';
+
+    const value = select.value || 'Standard';
+    return value;
   };
 
   const packageBaseLength = packageName => {
