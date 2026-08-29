@@ -448,7 +448,7 @@ document.querySelectorAll('.select-package').forEach(btn=>{
 function orderText(){
   const d=new FormData(form), c=calc();
   const add=addonChecks.filter(x=>x.checked).map(x=>{
-    if(x.value==='Extra Words') return `Extra Words — ${d.get('extraWordQty')||1} × $7`;
+    if(x.value==='Extra Words') return `Extra Words — ${d.get('extraWordsCount')||1} × $7`;
     return `${x.value} (+$${x.dataset.price})`;
   });
   const braid=form.elements.braid.options[form.elements.braid.selectedIndex].text;
@@ -490,8 +490,8 @@ ADD-ONS
 ${add.length ? add.join('\\n') : 'None selected'}
 LED color: ${addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? (d.get('ledColorName') || d.get('ledColor') || '—') : '—'}
 Charm details: ${addonChecks.find(x=>x.value==='Charm Package')?.checked ? (d.get('charmDetails') || '—') : '—'}
-Stuffed animal details: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalDetails') || '—') : '—'}
-Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty')||1} word(s))` : '—'}
+Stuffed animal details: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalText') || '—') : '—'}
+Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordsCount')||1} word(s))` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
 Printed Ribbon Bible Verse/Quote: ${d.get('ribbonText') || '—'}
@@ -523,10 +523,65 @@ Final design and pricing subject to review and approval.`;
 }
 
 const dialog=document.getElementById('orderDialog');
+const reviewOrderBtn=document.getElementById('reviewOrderBtn');
+
+
+function normalizeConditionalRequirements(){
+  document.querySelectorAll('.conditional-detail').forEach(detail=>{
+    const hidden=detail.hidden;
+    detail.querySelectorAll('input,select,textarea').forEach(control=>{
+      // Only our specific conditional detail fields become required when visible.
+      if(['extraWordsText','stuffedAnimalText','photoAddon'].includes(control.name)){
+        control.required=!hidden;
+      }
+    });
+  });
+}
+
+function openOrderReview(){
+  normalizeConditionalRequirements();
+  // Let the browser identify any genuinely missing required field.
+  if(!form.checkValidity()){
+    form.reportValidity();
+    const invalid=form.querySelector(':invalid');
+    if(invalid){
+      const card=invalid.closest('.form-card');
+      if(card){
+        const y=card.getBoundingClientRect().top + window.pageYOffset - 90;
+        window.scrollTo({top:y,behavior:'smooth'});
+      }
+      setTimeout(()=>invalid.focus({preventScroll:true}),350);
+    }
+    return;
+  }
+
+  try{
+    const summary=orderText();
+    const summaryEl=document.getElementById('dialogSummary');
+    if(summaryEl) summaryEl.textContent=summary;
+
+    if(dialog){
+      if(typeof dialog.showModal==='function'){
+        if(!dialog.open) dialog.showModal();
+      }else{
+        dialog.setAttribute('open','');
+      }
+    }
+  }catch(err){
+    console.error('Order review error:',err);
+    alert('We could not open the order review. Please check the form and try again.');
+  }
+}
+
+reviewOrderBtn?.addEventListener('click',e=>{
+  e.preventDefault();
+  openOrderReview();
+});
+
+// Keep Enter-key form submission working too.
 form.addEventListener('submit',e=>{
   e.preventDefault();
-  document.getElementById('dialogSummary').textContent=orderText();
-  dialog.showModal();
+  openOrderReview();
 });
 document.getElementById('closeDialog').addEventListener('click',()=>dialog.close());
 document.getElementById('editOrder').addEventListener('click',()=>dialog.close());
@@ -575,8 +630,8 @@ function buildPrivateOrderPayload(orderNo,c){
     ledColor:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColor') : '',
     ledColorName:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColorName') : '',
     charmDetails:addonChecks.find(x=>x.value==='Charm Package')?.checked ? d.get('charmDetails') : '',
-    stuffedAnimalDetails:addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? d.get('stuffedAnimalDetails') : '',
-    extraWordQty:addonChecks.find(x=>x.value==='Extra Words')?.checked ? Number(d.get('extraWordQty')||1) : 0,
+    stuffedAnimalDetails:addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? d.get('stuffedAnimalText') : '',
+    extraWordQty:addonChecks.find(x=>x.value==='Extra Words')?.checked ? Number(d.get('extraWordsCount')||1) : 0,
     extraWordsText:addonChecks.find(x=>x.value==='Extra Words')?.checked ? d.get('extraWordsText') : '',
     braid:d.get('braid'),
     printedRibbon:d.get('printedRibbon'),
@@ -763,7 +818,7 @@ ${add.length ? '• '+add.join('\\n• ') : 'None selected'}
 
 LED color: ${addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? (d.get('ledColorName') || d.get('ledColor') || '—') : '—'}
 Charm details: ${addonChecks.find(x=>x.value==='Charm Package')?.checked ? (d.get('charmDetails') || '—') : '—'}
-Stuffed animal: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalDetails') || '—') : '—'}
+Stuffed animal: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalText') || '—') : '—'}
 Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty') || 1})` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
