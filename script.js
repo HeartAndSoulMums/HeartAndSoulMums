@@ -324,9 +324,31 @@ promoInput.addEventListener('keydown',e=>{
 });
 
 document.querySelectorAll('.select-package').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const r=packageRadios.find(x=>x.value===btn.dataset.package);
-    r.checked=true;calc();document.getElementById('step1-2').scrollIntoView({behavior:'smooth',block:'start'});
+  btn.addEventListener('click',e=>{
+    e.preventDefault();
+
+    const selectedPackage=btn.dataset.package;
+    const r=packageRadios.find(x=>x.value===selectedPackage);
+    if(r) r.checked=true;
+
+    // Move the customer to the actual beginning of the order form first.
+    const target=document.getElementById('step1');
+    if(target){
+      const headerOffset=90;
+      const y=target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+      window.scrollTo({top:y,behavior:'smooth'});
+    }
+
+    // Recalculate after the navigation so a calculation issue can never block scrolling.
+    try{ calc(); }catch(err){ console.error('Package recalculation error:',err); }
+
+    // Give the selected package a visible focus state for keyboard/accessibility users.
+    if(r){
+      setTimeout(()=>{
+        const choice=r.closest('.choice');
+        if(choice) choice.scrollIntoView({behavior:'smooth',block:'nearest'});
+      },500);
+    }
   });
 });
 

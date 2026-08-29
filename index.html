@@ -87,7 +87,7 @@
           <li>10-inch length</li><li>One 6-inch flower</li><li>2 colors + filler</li>
           <li>3 charms</li><li>Homecoming + name lettering</li>
         </ul>
-        <button class="select-package" data-package="Mini Mum">Choose Mini Mum</button>
+        <button type="button" class="select-package" data-package="Mini Mum">Choose Mini Mum</button>
       </article>
 
       <article class="package-card">
@@ -99,7 +99,7 @@
           <li>12-inch length</li><li>One 6-inch flower</li><li>2 standard colors + filler</li>
           <li>3 charms</li><li>Homecoming + name + class year</li>
         </ul>
-        <button class="select-package" data-package="Garter">Choose Garter</button>
+        <button type="button" class="select-package" data-package="Garter">Choose Garter</button>
       </article>
 
       <article class="package-card">
@@ -111,7 +111,7 @@
           <li>24-inch length</li><li>One 7.5-inch flower</li><li>2 standard colors + filler</li>
           <li>5 charms</li><li>1 specialty chain / braid</li>
         </ul>
-        <button class="select-package" data-package="Classic">Choose Classic</button>
+        <button type="button" class="select-package" data-package="Classic">Choose Classic</button>
       </article>
 
       <article class="package-card featured">
@@ -124,7 +124,7 @@
           <li>24-inch length</li><li>One 9-inch flower</li><li>3 standard colors + filler</li>
           <li>Up to 7 charms</li><li>2 specialty chains / braids</li>
         </ul>
-        <button class="select-package" data-package="Signature">Choose Signature</button>
+        <button type="button" class="select-package" data-package="Signature">Choose Signature</button>
       </article>
 
       <article class="package-card">
@@ -136,7 +136,7 @@
           <li>24-inch length</li><li>Four 6-inch flowers</li><li>3 standard colors + filler</li>
           <li>Up to 7 charms</li><li>2 specialty chains / braids</li>
         </ul>
-        <button class="select-package" data-package="Signature Plus">Choose Signature Plus</button>
+        <button type="button" class="select-package" data-package="Signature Plus">Choose Signature Plus</button>
       </article>
 
       <article class="package-card showstopper">
@@ -148,7 +148,7 @@
           <li>Custom length + structure</li><li>Custom flower count</li><li>Custom colors + ribbon work</li>
           <li>Custom charms + specialty details</li><li>Final quote required</li>
         </ul>
-        <button class="select-package" data-package="Showstopper">Start a Showstopper</button>
+        <button type="button" class="select-package" data-package="Showstopper">Start a Showstopper</button>
       </article>
     </div>
   </section>
@@ -179,7 +179,7 @@
         <input type="hidden" name="promoCodeApplied" id="promoCodeAppliedField">
         <input type="hidden" name="referralStudent" id="referralStudentField">
         <input type="hidden" name="referralSchool" id="referralSchoolField">
-        <div class="form-card">
+        <div class="form-card" id="step1">
           <div class="step-number">1</div>
           <div class="form-content">
             <h3>Choose your mum</h3>
@@ -194,7 +194,6 @@
           </div>
         </div>
 
-        <div id="step1-2"></div>
         <div class="form-card" id="step2">
           <div class="step-number">2</div>
           <div class="form-content">
@@ -281,22 +280,58 @@
           <div class="form-content">
             <h3>Make it extra</h3>
             <p class="helper">Choose only the extras you want. Package inclusions shown above are already included in the base price.</p>
+
             <div class="addon-grid">
-              <label class="addon"><input type="checkbox" name="addons" value="Light It Up Package" data-price="35" data-detail="ledColorDetail"><span><strong>Light It Up</strong><small>LED lighting • +$35</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Bling Package" data-price="25"><span><strong>Bling</strong><small>Rhinestones + sparkle • +$25</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Feather Package" data-price="15"><span><strong>Feather Package</strong><small>1 feather boa • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Charm Package" data-price="15" data-detail="charmDetail"><span><strong>Charm Package</strong><small>Extra Themed Charms • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Photo Package" data-price="35" data-detail="photoAddonDetail"><span><strong>Photo</strong><small>1 photo • +$35</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Sweetheart Package" data-price="15"><span><strong>Sweetheart Package</strong><small>Couple names + hearts • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Stuffed Animal" data-price="15" data-detail="stuffedAnimalDetail"><span><strong>Stuffed Animal</strong><small>Custom stuffed animal • +$15</small></span></label>
-              <label class="addon"><input type="checkbox" name="addons" value="Extra Words" data-price="0" data-detail="extraWordsDetail"><span><strong>Extra Words</strong><small>Additional custom wording</small></span></label>
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Light It Up Package" data-price="35" data-detail="ledColorDetail">
+                <span><strong>Light It Up</strong><small>LED lighting • +$35</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Bling Package" data-price="25">
+                <span><strong>Bling</strong><small>Rhinestones + sparkle • +$25</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Feather Package" data-price="15">
+                <span><strong>Feather Package</strong><small>1 feather boa • +$15</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Charm Package" data-price="15" data-detail="charmDetail">
+                <span><strong>Charm Package</strong><small>Extra themed charms • +$15</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Photo Package" data-price="35" data-detail="photoAddonDetail">
+                <span><strong>Photo</strong><small>1 photo • +$35</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Sweetheart Package" data-price="15">
+                <span><strong>Sweetheart Package</strong><small>Couple names + hearts • +$15</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Stuffed Animal" data-price="15" data-detail="stuffedAnimalDetail">
+                <span><strong>Stuffed Animal</strong><small>Custom stuffed animal • +$15</small></span>
+              </label>
+
+              <label class="addon">
+                <input type="checkbox" name="addons" value="Extra Words" data-price="0" data-detail="extraWordsDetail">
+                <span><strong>Extra Words</strong><small>Additional custom wording</small></span>
+              </label>
             </div>
 
             <div id="ledColorDetail" class="conditional-detail" hidden>
               <label>LED light color
-                <div class="color-input-wrap"><input type="color" name="ledColor" value="#ffffff"><input type="text" name="ledColorName" value="White" placeholder="e.g. White, pink, blue"></div>
+                <div class="color-input-wrap">
+                  <input type="color" name="ledColor" value="#ffffff">
+                  <input type="text" name="ledColorName" value="White" placeholder="e.g. White, pink, blue">
+                </div>
               </label>
             </div>
+
             <div id="charmDetail" class="conditional-detail" hidden>
               <label>Charm Package details
                 <textarea name="charmDetails" rows="3" placeholder="What themed charms should we look for?"></textarea>
@@ -315,6 +350,7 @@
                 <input type="text" name="stuffedAnimalText" placeholder="Tell us what stuffed animal you want">
               </label>
             </div>
+
             <div id="extraWordsDetail" class="conditional-detail" hidden>
               <label>How many extra words?
                 <select name="extraWordsCount" class="priced-select">
@@ -324,14 +360,14 @@
                   <option value="3" data-price="21">3 words — +$21</option>
                 </select>
               </label>
+
               <label>Extra Words
                 <input type="text" name="extraWordsText" placeholder="Enter the extra word(s)">
               </label>
             </div>
-              <p class="helper">Extra words are $7 per word.</p>
-            </div>
 
             <h4 class="subhead">Specialty ribbon + braids</h4>
+
             <div class="field-grid">
               <label>Specialty braid
                 <select name="braid" class="priced-select">
@@ -340,17 +376,19 @@
                   <option value="Thick Braid" data-price="25">Thick Braid — +$25</option>
                 </select>
               </label>
+
               <label>Printed Ribbon Bible Verse/Quote
                 <select name="printedRibbon" class="priced-select">
                   <option value="None" data-price="0">None</option>
                   <option value="Bible Verse/Quote Ribbon" data-price="7">Add printed Bible verse/quote ribbon — +$7</option>
                 </select>
               </label>
+            </div>
+
             <div id="printedRibbonDetail" class="conditional-detail" hidden>
               <label>Printed Ribbon Bible Verse/Quote
                 <input type="text" name="ribbonText" placeholder="Enter the exact Bible verse or quote">
               </label>
-            </div>
             </div>
           </div>
         </div>
