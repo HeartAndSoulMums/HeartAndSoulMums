@@ -647,5 +647,159 @@
 </dialog>
 
 <script src="script.js"></script>
+
+<script>
+(() => {
+  const root = document;
+  const PRICE = {
+    'Mini Mum': 65,
+    'Garter': 115,
+    'Classic': 195,
+    'Signature': 260,
+    'Signature Plus': 325,
+    'Showstopper': 500
+  };
+
+  const money = n => '$' + Number(n || 0).toLocaleString('en-US', {
+    maximumFractionDigits: 2
+  });
+
+  function selectedPackage() {
+    const radio = root.querySelector('input[name="package"]:checked');
+    return {
+      radio,
+      name: radio ? radio.value : 'Classic',
+      base: PRICE[radio ? radio.value : 'Classic'] ?? 195
+    };
+  }
+
+  function optionPrice(select) {
+    if (!select || select.selectedIndex < 0) return 0;
+    return Number(select.options[select.selectedIndex]?.dataset?.price || 0);
+  }
+
+  function calculateVisibleTotal() {
+    const {name, base} = selectedPackage();
+
+    let structure = 0;
+    root.querySelectorAll('select.priced-select').forEach(select => {
+      if (select.name === 'length' || select.name === 'fullness') {
+        structure += optionPrice(select);
+      }
+    });
+
+    let extras = 0;
+    root.querySelectorAll('input[name="addons"]:checked').forEach(cb => {
+      extras += Number(cb.dataset.price || 0);
+    });
+
+    root.querySelectorAll('select.priced-select').forEach(select => {
+      if (select.name === 'braid' || select.name === 'printedRibbon' || select.name === 'extraWordsCount') {
+        extras += optionPrice(select);
+      }
+    });
+
+    const subtotal = base + structure + extras;
+
+    const summaryPackage = root.getElementById('summaryPackage');
+    const packagePrice = root.getElementById('packagePrice');
+    const structurePrice = root.getElementById('structurePrice');
+    const addonPrice = root.getElementById('addonPrice');
+    const totalPrice = root.getElementById('totalPrice');
+    const payInFullPrice = root.getElementById('payInFullPrice');
+
+    if (summaryPackage) {
+      summaryPackage.textContent = name === 'Garter' ? 'Garter' : `${name} Mum`;
+    }
+    if (packagePrice) packagePrice.textContent = money(base);
+    if (structurePrice) structurePrice.textContent = money(structure);
+    if (addonPrice) addonPrice.textContent = money(extras);
+    if (totalPrice) totalPrice.textContent = money(subtotal);
+    if (payInFullPrice) payInFullPrice.textContent = money(subtotal);
+
+    const quoteNote = root.getElementById('quoteNote');
+    if (quoteNote) {
+      quoteNote.textContent = name === 'Showstopper'
+        ? 'Showstopper starts at $500. Final price requires a custom design quote before payment.'
+        : 'Final price is confirmed after design review. Highly custom requests or special-order materials may affect pricing.';
+    }
+  }
+
+  function syncColors() {
+    const {name} = selectedPackage();
+    const needsThree = ['Signature', 'Signature Plus', 'Showstopper'].includes(name);
+    const third = root.getElementById('thirdColorField');
+    const help = root.getElementById('colorCountHelp');
+
+    if (third) third.hidden = !needsThree;
+
+    if (help) {
+      if (name === 'Showstopper') {
+        help.textContent = 'Showstopper colors are fully custom. Start with up to 3 standard colors plus a filler/accent color.';
+      } else {
+        help.textContent = `This package includes ${needsThree ? 3 : 2} standard colors plus a filler/accent color (normally white).`;
+      }
+    }
+  }
+
+  function syncPackageUI() {
+    syncColors();
+    calculateVisibleTotal();
+  }
+
+  function scrollToOrder() {
+    const target = root.getElementById('step1');
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + window.scrollY - 90;
+    window.scrollTo({top, behavior: 'smooth'});
+  }
+
+  // Direct package radio changes.
+  root.querySelectorAll('input[name="package"]').forEach(radio => {
+    radio.addEventListener('change', syncPackageUI);
+  });
+
+  // Top package CTA buttons. This intentionally does not depend on script.js.
+  root.querySelectorAll('.select-package').forEach(button => {
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const name = button.dataset.package;
+      const radio = [...root.querySelectorAll('input[name="package"]')]
+        .find(r => r.value === name);
+
+      if (radio) {
+        radio.checked = true;
+      }
+
+      // Update immediately, then move to the order section.
+      syncPackageUI();
+      scrollToOrder();
+
+      // Fire a normal change event afterward for the rest of the site's logic.
+      if (radio) {
+        radio.dispatchEvent(new Event('change', {bubbles: true}));
+      }
+    }, true);
+  });
+
+  // Keep the visible estimate responsive to anything priced.
+  root.addEventListener('change', event => {
+    const el = event.target;
+    if (
+      el.matches?.('input[name="package"], input[name="addons"], select.priced-select')
+    ) {
+      setTimeout(syncPackageUI, 0);
+    }
+  });
+
+  // Initial sync after all scripts/config have had a chance to load.
+  syncPackageUI();
+  setTimeout(syncPackageUI, 250);
+  setTimeout(syncPackageUI, 1000);
+})();
+</script>
+
 </body>
 </html>
