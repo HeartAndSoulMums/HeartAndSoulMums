@@ -439,7 +439,7 @@
 
         <div class="submit-card">
           <label class="agree"><input type="checkbox" required><span>I understand this is an order request. Final design, availability and price will be confirmed before production begins.</span></label>
-          <button type="submit" class="button submit-button">Review Order Request</button>
+          <button type="button" id="reviewOrderBtn" class="button submit-button">Review Order Request</button>
           <p class="tiny-note">Pricing in this prototype is based on the current proposed menu and can be adjusted before launch.</p>
         </div>
       </form>
@@ -701,12 +701,27 @@
 
     const subtotal = base + structure + extras;
 
+    // Respect the promo state from the main order script.
+    let promoIsActive = false;
+    let discountPercent = 10;
+    try {
+      promoIsActive = typeof activePromo !== 'undefined' && !!activePromo;
+      if (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG?.referral?.discount_percent) {
+        discountPercent = Number(SITE_CONFIG.referral.discount_percent) || 10;
+      }
+    } catch (_) {}
+
+    const discount = promoIsActive ? subtotal * (discountPercent / 100) : 0;
+    const finalTotal = subtotal - discount;
+
     const summaryPackage = root.getElementById('summaryPackage');
     const packagePrice = root.getElementById('packagePrice');
     const structurePrice = root.getElementById('structurePrice');
     const addonPrice = root.getElementById('addonPrice');
     const totalPrice = root.getElementById('totalPrice');
     const payInFullPrice = root.getElementById('payInFullPrice');
+    const discountRow = root.getElementById('discountRow');
+    const discountPrice = root.getElementById('discountPrice');
 
     if (summaryPackage) {
       summaryPackage.textContent = name === 'Garter' ? 'Garter' : `${name} Mum`;
@@ -714,8 +729,10 @@
     if (packagePrice) packagePrice.textContent = money(base);
     if (structurePrice) structurePrice.textContent = money(structure);
     if (addonPrice) addonPrice.textContent = money(extras);
-    if (totalPrice) totalPrice.textContent = money(subtotal);
-    if (payInFullPrice) payInFullPrice.textContent = money(subtotal);
+    if (discountRow) discountRow.hidden = !promoIsActive;
+    if (discountPrice) discountPrice.textContent = '-' + money(discount);
+    if (totalPrice) totalPrice.textContent = money(finalTotal);
+    if (payInFullPrice) payInFullPrice.textContent = money(finalTotal);
 
     const quoteNote = root.getElementById('quoteNote');
     if (quoteNote) {
@@ -793,6 +810,22 @@
       setTimeout(syncPackageUI, 0);
     }
   });
+
+
+  const promoButton = root.getElementById('applyPromo');
+  if (promoButton) {
+    promoButton.addEventListener('click', () => {
+      setTimeout(calculateVisibleTotal, 0);
+      setTimeout(calculateVisibleTotal, 50);
+    });
+  }
+
+  const promoField = root.getElementById('promoCode');
+  if (promoField) {
+    promoField.addEventListener('input', () => {
+      setTimeout(calculateVisibleTotal, 0);
+    });
+  }
 
   // Initial sync after all scripts/config have had a chance to load.
   syncPackageUI();
