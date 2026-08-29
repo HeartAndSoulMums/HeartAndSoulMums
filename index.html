@@ -834,5 +834,171 @@
 })();
 </script>
 
+
+<script>
+(() => {
+  const submitBtn = document.getElementById('submitRealOrder');
+  const form = document.getElementById('mumOrderForm') || document.querySelector('form[name="mum-order"]') || document.querySelector('form');
+  const reviewDialog = document.getElementById('orderDialog');
+  const confirmationDialog = document.getElementById('confirmationDialog');
+
+  if (!submitBtn || !form) return;
+
+  let submitting = false;
+
+  const field = name => {
+    const el = form.elements[name];
+    if (!el) return '';
+    if (typeof RadioNodeList !== 'undefined' && el instanceof RadioNodeList) return el.value || '';
+    return (el.value ?? '').toString().trim();
+  };
+
+  const checkedAddons = () =>
+    [...form.querySelectorAll('input[name="addons"]:checked')].map(el => el.value);
+
+  const orderNumber = () => {
+    const d = new Date();
+    const yy = String(d.getFullYear()).slice(-2);
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const rand = Math.floor(1000 + Math.random() * 9000);
+    return `HS-${yy}${mm}${dd}-${rand}`;
+  };
+
+  const visibleTotal = () => {
+    const text = document.getElementById('totalPrice')?.textContent || '$0';
+    return Number(text.replace(/[^0-9.]/g, '')) || 0;
+  };
+
+  const currentPromo = () => {
+    const code = field('promoCode').toUpperCase();
+    if (code === 'KENNEDY10') return { code: 'KENNEDY10', student: 'Kennedy', school: '' };
+    return { code, student: '', school: '' };
+  };
+
+  function makePayload(orderNo) {
+    const promo = currentPromo();
+
+    return {
+      orderNumber: orderNo,
+      package: field('package'),
+      baseLength: '',
+      length: field('length'),
+      fullness: field('fullness'),
+      primaryColor: field('primaryColor'),
+      primaryColorName: field('primaryColorName'),
+      secondaryColor: field('secondaryColor'),
+      secondaryColorName: field('secondaryColorName'),
+      thirdColor: field('thirdColor'),
+      thirdColorName: field('thirdColorName'),
+      accentColor: field('accentColor'),
+      accentColorName: field('accentColorName'),
+      style: field('style'),
+      studentName: field('studentName'),
+      ribbonName: field('ribbonName'),
+      schoolRibbonText: field('schoolRibbonText'),
+      grade: field('grade'),
+      gradYear: field('gradYear'),
+      homecomingDate: field('homecomingDate'),
+      activities: field('activities'),
+      quote: '',
+      addons: checkedAddons(),
+      ledColor: field('ledColor'),
+      ledColorName: field('ledColorName'),
+      charmDetails: field('charmDetails'),
+      stuffedAnimalDetails: field('stuffedAnimalText'),
+      extraWordQty: Number(field('extraWordsCount') || 0),
+      extraWordsText: field('extraWordsText'),
+      braid: field('braid'),
+      printedRibbon: field('printedRibbon'),
+      ribbonText: field('ribbonText'),
+      instructions: field('instructions'),
+      inspirationCount: form.elements.inspiration?.files?.length || 0,
+      customerName: field('customerName'),
+      phone: field('phone'),
+      email: field('email'),
+      contactMethod: field('contactMethod'),
+      estimatedTotal: visibleTotal(),
+      promoCodeApplied: promo.code,
+      referralStudent: promo.student,
+      referralSchool: promo.school,
+      photoAddonFile: form.elements.photoAddon?.files?.[0]?.name || ''
+    };
+  }
+
+  async function submitStandalone(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (submitting) return;
+
+    const isTest =
+      new URLSearchParams(window.location.search).get('test') === '1' ||
+      window.location.pathname.startsWith('/test');
+
+    if (isTest) {
+      alert('Test mode does not submit a real order. Use “Simulate Paid Test Order” instead.');
+      return;
+    }
+
+    if (!form.checkValidity()) {
+      if (reviewDialog?.open) reviewDialog.close();
+      form.reportValidity();
+      const invalid = form.querySelector(':invalid');
+      if (invalid) {
+        invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => invalid.focus({ preventScroll: true }), 300);
+      }
+      return;
+    }
+
+    const oldText = submitBtn.textContent;
+    const orderNo = orderNumber();
+
+    try {
+      submitting = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      const response = await fetch('/.netlify/functions/save-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(makePayload(orderNo))
+      });
+
+      let result = {};
+      try { result = await response.json(); } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(result.error || `Submission failed (${response.status}).`);
+      }
+
+      if (reviewDialog?.open) reviewDialog.close();
+
+      const orderNumEl = document.getElementById('confirmationOrderNumber');
+      const totalEl = document.getElementById('confirmationTotal');
+
+      if (orderNumEl) orderNumEl.textContent = result.orderNumber || orderNo;
+      if (totalEl) totalEl.textContent = '$' + visibleTotal().toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+      if (confirmationDialog && typeof confirmationDialog.showModal === 'function') {
+        if (!confirmationDialog.open) confirmationDialog.showModal();
+      } else {
+        alert(`Order request submitted successfully! Order number: ${result.orderNumber || orderNo}`);
+      }
+    } catch (err) {
+      console.error('Standalone order submission failed:', err);
+      alert(`We could not submit the order request. ${err.message || 'Please try again.'}`);
+    } finally {
+      submitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = oldText;
+    }
+  }
+
+  submitBtn.addEventListener('click', submitStandalone, true);
+})();
+</script>
+
 </body>
 </html>
