@@ -128,6 +128,12 @@ async function loadOrderPhoto(orderNumber){
   return data?.dataUrl||"";
 }
 
+
+async function loadInspirationPhotos(orderNumber){
+  const data=await api("inspirationPhotos",{orderNumber});
+  return Array.isArray(data?.photos)?data.photos:[];
+}
+
 async function runHealth(){
   const s=$("#loginStatus");
   try{
@@ -184,7 +190,7 @@ Printed Ribbon Bible Verse/Quote: ${esc(d.ribbonText||"—")}<br>
 Stuffed Animal Details: ${esc(d.stuffedAnimalText||"—")}<br>
 Photo upload: ${esc(d.photoAddonFile||"—")}</div></section>
 ${d.hasPhoto?`<section class="card"><h3>Uploaded Photo</h3><div id="orderPhotoWrap" class="order-photo-wrap"><div class="photo-loading">Loading photo…</div></div></section>`:""}
-<section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div></section></div>
+<section class="card"><h3>Custom Vision + Instructions</h3><div class="copytext">${esc(d.instructions||"No additional instructions provided.")}</div>${d.hasInspirationPhotos?`<div class="inspiration-owner-block"><strong>Inspiration Photos</strong><div id="inspirationPhotosWrap" class="inspiration-photo-grid"><div class="photo-loading">Loading inspiration photos…</div></div></div>`:""}</section></div>
 <aside class="detail-side"><section class="card"><h3>Order Status</h3><select class="status-select" id="detailStatus">${STATUS.map(s=>`<option ${s===st?"selected":""}>${esc(s)}</option>`).join("")}</select></section><section class="card"><h3>Customer</h3><div class="copytext"><strong>${esc(customerName(o))}</strong>
 ${esc(phoneDisplay(d.phone))}
 ${esc(d.email||"—")}
@@ -202,6 +208,17 @@ Order #: ${esc(o.orderNumber)}</div></section></aside></div></div>`;
         : `<div class="photo-error">Photo could not be loaded.</div>`;
     }).catch(err=>{
       if(wrap)wrap.innerHTML=`<div class="photo-error">${esc(err.message||"Photo could not be loaded.")}</div>`;
+    });
+  }
+  if(d.hasInspirationPhotos){
+    const wrap=$("#inspirationPhotosWrap");
+    loadInspirationPhotos(o.orderNumber).then(photos=>{
+      if(!wrap)return;
+      wrap.innerHTML=photos.length
+        ? photos.map((photo,index)=>`<figure class="inspiration-photo-card"><img class="inspiration-photo" src="${photo.dataUrl}" alt="Customer inspiration photo ${index+1}"><figcaption>${esc(photo.fileName||`Inspiration photo ${index+1}`)}</figcaption></figure>`).join("")
+        : `<div class="photo-error">No inspiration photos were found.</div>`;
+    }).catch(err=>{
+      if(wrap)wrap.innerHTML=`<div class="photo-error">${esc(err.message||"Inspiration photos could not be loaded.")}</div>`;
     });
   }
   $("#detailStatus").addEventListener("change",async e=>{const next=e.target.value,prior=o.status||"New";e.target.disabled=true;try{await api("status",{orderNumber:o.orderNumber,status:next});o.status=next;render();$("#orderDialog").close();openOrder(o.orderNumber)}catch(err){e.target.value=prior;alert("Could not update status: "+err.message)}finally{e.target.disabled=false}})

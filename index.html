@@ -913,7 +913,22 @@
     }
   }
 
-  function makePayload(orderNo, photoDataUrl = '') {
+
+  async function inspirationFilesToPayload() {
+    const files = [...(form.elements.inspiration?.files || [])].slice(0, 3);
+    const images = [];
+
+    for (const file of files) {
+      const dataUrl = await imageFileToDataUrl(file);
+      images.push({
+        fileName: file.name || 'inspiration.jpg',
+        dataUrl
+      });
+    }
+    return images;
+  }
+
+  function makePayload(orderNo, photoDataUrl = '', inspirationImages = []) {
     const promo = currentPromo();
 
     return {
@@ -950,7 +965,8 @@
       printedRibbon: field('printedRibbon'),
       ribbonText: field('ribbonText'),
       instructions: field('instructions'),
-      inspirationCount: form.elements.inspiration?.files?.length || 0,
+      inspirationCount: inspirationImages.length,
+      inspirationImages,
       customerName: field('customerName'),
       phone: field('phone'),
       email: field('email'),
@@ -1000,11 +1016,12 @@
 
       const photoFile = form.elements.photoAddon?.files?.[0] || null;
       const photoDataUrl = photoFile ? await imageFileToDataUrl(photoFile) : '';
+      const inspirationImages = await inspirationFilesToPayload();
 
       const response = await fetch('/.netlify/functions/save-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(makePayload(orderNo, photoDataUrl))
+        body: JSON.stringify(makePayload(orderNo, photoDataUrl, inspirationImages))
       });
 
       let result = {};

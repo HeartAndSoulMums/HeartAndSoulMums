@@ -50,3 +50,37 @@ dialog{width:min(1100px,calc(100% - 28px));max-height:92vh;overflow:auto;border:
   color:#705f59;
   font-size:.95rem;
 }
+
+
+.inspiration-owner-block{
+  margin-top:18px;
+}
+.inspiration-owner-block>strong{
+  display:block;
+  margin-bottom:10px;
+}
+.inspiration-photo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+}
+.inspiration-photo-card{
+  margin:0;
+  padding:8px;
+  border:1px solid #eadfd9;
+  border-radius:14px;
+  background:#fffaf7;
+}
+.inspiration-photo{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  display:block;
+  border-radius:10px;
+}
+.inspiration-photo-card figcaption{
+  margin-top:7px;
+  font-size:.78rem;
+  color:#705f59;
+  overflow-wrap:anywhere;
+}

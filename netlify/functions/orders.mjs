@@ -114,6 +114,31 @@ export default async(request)=>{
         });
       }
 
+      if(body.action==="inspirationPhotos"){
+        const orderNumber=String(body.orderNumber||"").trim();
+        if(!orderNumber)return respond(400,{error:"Missing order number."});
+
+        const photos=[];
+        for(let i=0;i<3;i++){
+          const key=`inspiration:${orderNumber}:${i}`;
+          const base64=await deadline(
+            s.get(key,{type:"text",consistency:"strong"}),
+            6000,
+            `Inspiration photo ${i+1} read`
+          );
+          if(!base64)continue;
+
+          const entry=await deadline(s.getMetadata(key),6000,"Inspiration photo metadata");
+          const contentType=entry?.metadata?.contentType||"image/jpeg";
+          photos.push({
+            dataUrl:`data:${contentType};base64,${base64}`,
+            fileName:entry?.metadata?.fileName||`inspiration-${i+1}.jpg`
+          });
+        }
+
+        return respond(200,{ok:true,photos});
+      }
+
       if(body.action!=="status") return respond(400,{error:"Invalid action."});
       const orderNumber=String(body.orderNumber||"").trim();
       const status=String(body.status||"").trim();

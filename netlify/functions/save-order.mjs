@@ -57,7 +57,8 @@ export default async (request) => {
         extraWordsText:clean(body.extraWordsText,2000),
         braid:clean(body.braid,200), printedRibbon:clean(body.printedRibbon,200),
         ribbonText:clean(body.ribbonText,1000), instructions:clean(body.instructions,8000),
-        inspirationCount:Number(body.inspirationCount||0),
+        inspirationCount:Math.min(3,Number(body.inspirationCount||0)),
+        hasInspirationPhotos:Array.isArray(body.inspirationImages) && body.inspirationImages.length>0,
         customerName, phone:clean(body.phone,80), email:clean(body.email,250),
         contactMethod:clean(body.contactMethod,80), estimatedTotal:Number(body.estimatedTotal||0),
         promoCodeApplied:clean(body.promoCodeApplied,100),
@@ -77,9 +78,33 @@ export default async (request) => {
       });
     }
 
+    const inspirationItems=Array.isArray(body.inspirationImages)?body.inspirationImages.slice(0,3):[];
+    let inspirationStored=0;
+    for(let i=0;i<inspirationItems.length;i++){
+      const item=inspirationItems[i]||{};
+      const parsed=parsePhotoDataUrl(item.dataUrl);
+      if(!parsed)continue;
+      await store.set(`inspiration:${orderNumber}:${i}`,parsed.base64,{
+        metadata:{
+          contentType:parsed.contentType,
+          fileName:clean(item.fileName,300),
+          index:i
+        }
+      });
+      inspirationStored++;
+    }
+
+    order.data.inspirationCount=inspirationStored;
+    order.data.hasInspirationPhotos=inspirationStored>0;
+
     await store.setJSON(`order:${orderNumber}`,order);
 
-    return respond(200,{ok:true,orderNumber,photoStored:Boolean(photo)});
+    return respond(200,{
+      ok:true,
+      orderNumber,
+      photoStored:Boolean(photo),
+      inspirationStored
+    });
   }catch(err){
     console.error("save-order",err);
     return respond(500,{error:err?.message||"Could not save order."});
