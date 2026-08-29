@@ -37,8 +37,8 @@ export default async (request) => {
       paymentStatus:"Pending checkout",
       data:{
         package:clean(body.package,100),
-        baseLength:clean(body.baseLength,100),
-        length:clean(body.length,100), fullness:clean(body.fullness,100),
+        baseLength:clean(body.baseLength||"",100),
+        length:clean(body.length||"Standard",100), fullness:clean(body.fullness||"Standard",100),
         primaryColor:clean(body.primaryColor,40), primaryColorName:clean(body.primaryColorName,100),
         secondaryColor:clean(body.secondaryColor,40), secondaryColorName:clean(body.secondaryColorName,100),
         thirdColor:clean(body.thirdColor,40), thirdColorName:clean(body.thirdColorName,100),

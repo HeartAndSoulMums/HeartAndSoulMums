@@ -870,6 +870,20 @@
     return Number(text.replace(/[^0-9.]/g, '')) || 0;
   };
 
+  const selectedLengthChoice = () => {
+    const select = form.elements.length;
+    if (!select) return 'Standard';
+    return select.value || 'Standard';
+  };
+
+  const packageBaseLength = packageName => {
+    if (packageName === 'Mini Mum') return '10 in';
+    if (packageName === 'Garter') return '12 in';
+    if (['Classic','Signature','Signature Plus'].includes(packageName)) return '24 in';
+    if (packageName === 'Showstopper') return 'Custom / quote';
+    return '';
+  };
+
   const currentPromo = () => {
     const code = field('promoCode').toUpperCase();
     if (code === 'KENNEDY10') return { code: 'KENNEDY10', student: 'Kennedy', school: '' };
@@ -934,8 +948,8 @@
     return {
       orderNumber: orderNo,
       package: field('package'),
-      baseLength: '',
-      length: field('length'),
+      baseLength: packageBaseLength(field('package')),
+      length: selectedLengthChoice(),
       fullness: field('fullness'),
       primaryColor: field('primaryColor'),
       primaryColorName: field('primaryColorName'),
