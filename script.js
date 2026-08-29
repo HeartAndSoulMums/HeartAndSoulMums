@@ -254,7 +254,7 @@ function selectPrice(select){
 function money(n){
   return n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:Number.isInteger(n)?0:2});
 }
-function calc(){
+function calc(){syncConditionalDetails();
   const pkg = document.querySelector('input[name="package"]:checked');
   const base = Number(pkg.dataset.price);
   const structure = pricedSelects
@@ -326,7 +326,7 @@ promoInput.addEventListener('keydown',e=>{
 document.querySelectorAll('.select-package').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const r=packageRadios.find(x=>x.value===btn.dataset.package);
-    r.checked=true;calc();document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'start'});
+    r.checked=true;calc();document.getElementById('step1-2').scrollIntoView({behavior:'smooth',block:'start'});
   });
 });
 
@@ -467,6 +467,7 @@ function buildPrivateOrderPayload(orderNo,c){
     printedRibbon:d.get('printedRibbon'),
     ribbonText:d.get('ribbonText'),
     instructions:d.get('instructions'),
+    stuffedAnimalText:d.get('stuffedAnimalText')||'',
     photoAddonFile:addonChecks.find(x=>x.value==='Photo Package')?.checked
       ? (form.elements.photoAddon?.files?.[0]?.name || '')
       : '',
@@ -718,3 +719,10 @@ document.getElementById('copyOwnerOrder')?.addEventListener('click',async()=>{
 });
 
 loadSiteConfig();
+
+document.querySelectorAll('input[type="checkbox"][data-detail]').forEach(cb=>{
+  cb.addEventListener('change',()=>{syncConditionalDetails();calc();});
+});
+if(form.elements.printedRibbon){
+  form.elements.printedRibbon.addEventListener('change',()=>{syncConditionalDetails();calc();});
+}
