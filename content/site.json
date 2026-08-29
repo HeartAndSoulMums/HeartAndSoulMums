@@ -7,71 +7,74 @@
   },
   "difference": {
     "heading": "A wearable keepsake of their high-school experience.",
-    "body": "Names, sports, clubs, jersey numbers, school pride, favorite things, photos, custom ribbon and personal details can all become part of the design.",
+    "body": "Names, class year, school pride, activities, charms, photos, custom ribbon and personal details can all become part of the design.",
     "tagline": "Don’t see it? Ask us. If we can make it, we’ll put it on your mum."
   },
   "packages": {
+    "Mini Mum": {
+      "price": 65,
+      "label": "SMALL + SWEET",
+      "description": "A 10-inch mini mum with one 6-inch flower, 2 colors + filler, 3 charms, Homecoming lettering and name lettering."
+    },
+    "Garter": {
+      "price": 115,
+      "label": "COMPACT TRADITION",
+      "description": "A 12-inch garter with one 6-inch flower, 2 standard colors + filler, 3 charms, Homecoming lettering, name lettering and class year."
+    },
     "Classic": {
       "price": 195,
-      "label": "TRADITIONAL + PERSONAL",
-      "description": "A smaller, beautifully personalized traditional mum."
+      "label": "TRADITIONAL FAVORITE",
+      "description": "A 24-inch traditional mum with one 7.5-inch flower, 2 standard colors + filler, 5 charms, Homecoming/name/class-year lettering and 1 specialty chain or braid."
     },
     "Signature": {
-      "price": 325,
-      "label": "OUR SIGNATURE EXPERIENCE",
-      "description": "A full-size custom mum with more ribbon, texture and personality."
+      "price": 260,
+      "label": "ELEVATED + PERSONAL",
+      "description": "A 24-inch elevated mum with one 9-inch flower, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."
     },
-    "Deluxe": {
-      "price": 450,
-      "label": "BIG TEXAS ENERGY",
-      "description": "Oversized, extra-detailed and built to make people ask where you got it."
+    "Signature Plus": {
+      "price": 325,
+      "label": "FULLER STATEMENT DESIGN",
+      "description": "A 24-inch statement mum built around four 6-inch flowers, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."
     },
     "Showstopper": {
-      "price": 600,
-      "label": "TELL US YOUR VISION",
-      "description": "Our most elaborate custom work. Individually designed and quoted."
+      "price": 500,
+      "label": "FULLY CUSTOM • QUOTED",
+      "description": "Starting at $500. Fully custom and quoted based on size, flowers, ribbon, specialty work, charms and overall design complexity."
     }
   },
   "pricing": {
-    "sizes": {
-      "Standard": 0,
-      "Large": 50,
-      "XL": 100,
-      "Oversized": 150
-    },
     "lengths": {
       "Standard": 0,
-      "Long": 40,
-      "Floor Length": 75,
-      "Extra Floor Length": 100
+      "Long": 18,
+      "Extra Long": 30
     },
     "fullness": {
-      "Classic": 0,
-      "Extra Full": 50,
-      "Extreme": 125
+      "Standard": 0,
+      "Xtra Full": 20
     },
     "addons": {
       "Light It Up Package": 35,
-      "Bling Package": 40,
-      "Feather Package": 25,
-      "Charm Package": 30,
+      "Bling Package": 25,
+      "Feather Package": 15,
+      "Charm Package": 15,
       "Photo Package": 35,
-      "Sport Package": 35,
-      "Senior Package": 40,
-      "Sweetheart Package": 35
+      "Sweetheart Package": 15,
+      "Stuffed Animal": 15,
+      "Extra Words": 0
     },
     "braids": {
       "None": 0,
-      "Simple specialty braid": 15,
-      "Detailed specialty braid": 25,
-      "Elaborate braid": 35
+      "Simple Braid": 15,
+      "Thick Braid": 25
     },
     "printed_ribbon": {
       "None": 0,
-      "1 custom ribbon": 20,
-      "2 custom ribbons": 40,
-      "3 custom ribbons": 60
-    }
+      "1 custom ribbon": 7,
+      "2 custom ribbons": 14,
+      "3 custom ribbons": 21
+    },
+    "school_name_ribbon": 7,
+    "extra_word_each": 7
   },
   "referral": {
     "discount_percent": 10,
@@ -88,7 +91,7 @@
   },
   "senior": {
     "heading": "Four years. One final homecoming.",
-    "body": "Senior mums can incorporate their name, Class of 2027, school, mascot, sports, clubs, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."
+    "body": "Senior mums can incorporate their name, Class of 2027, school pride, activities, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."
   },
   "policies": [
     {
@@ -136,7 +139,7 @@
     "email": "",
     "instagram": "",
     "facebook": "",
-    "service_area": "Local pickup"
+    "service_area": "Local pickup • Shipping optional based on approval"
   },
   "announcement": {
     "enabled": true,
@@ -146,7 +149,7 @@
     "accepting_orders": true,
     "closed_message": "We are currently at capacity for new orders. Please check back soon.",
     "minimum_lead_days": 14,
-    "pickup_instructions": "Pickup details and payment instructions are confirmed after your order is reviewed.",
+    "pickup_instructions": "Pickup details and payment instructions are confirmed after your order is reviewed. Shipping is optional based on approval.",
     "payment_policy": "Full payment is required before production begins.",
     "refund_policy": "Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."
   }

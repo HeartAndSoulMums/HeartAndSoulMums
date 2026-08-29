@@ -2,7 +2,7 @@ let SITE_CONFIG = null;
 let PROMO_CODES = {};
 let activePromo = null;
 
-const FALLBACK_CONFIG = {"hero":{"eyebrow":"PREMIUM • PERSONALIZED • ONE OF A KIND","title_before":"No two mums","title_emphasis":"should be the same.","body":"Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."},"difference":{"heading":"A wearable keepsake of their high-school experience.","body":"Names, sports, clubs, jersey numbers, school pride, favorite things, photos, custom ribbon and personal details can all become part of the design.","tagline":"Don’t see it? Ask us. If we can make it, we’ll put it on your mum."},"packages":{"Classic":{"price":195,"label":"TRADITIONAL + PERSONAL","description":"A smaller, beautifully personalized traditional mum."},"Signature":{"price":325,"label":"OUR SIGNATURE EXPERIENCE","description":"A full-size custom mum with more ribbon, texture and personality."},"Deluxe":{"price":450,"label":"BIG TEXAS ENERGY","description":"Oversized, extra-detailed and built to make people ask where you got it."},"Showstopper":{"price":600,"label":"TELL US YOUR VISION","description":"Our most elaborate custom work. Individually designed and quoted."}},"pricing":{"sizes":{"Standard":0,"Large":50,"XL":100,"Oversized":150},"lengths":{"Standard":0,"Long":40,"Floor Length":75,"Extra Floor Length":100},"fullness":{"Classic":0,"Extra Full":50,"Extreme":125},"addons":{"Light It Up Package":35,"Bling Package":40,"Feather Package":25,"Charm Package":30,"Photo Package":35,"Sport Package":35,"Senior Package":40,"Sweetheart Package":35},"braids":{"None":0,"Simple specialty braid":15,"Detailed specialty braid":25,"Elaborate braid":35},"printed_ribbon":{"None":0,"1 custom ribbon":20,"2 custom ribbons":40,"3 custom ribbons":60}},"referral":{"discount_percent":10,"reward_orders":5,"reward_text":"Free Classic mum after 5 fully paid, non-refunded qualifying orders.","codes":[{"code":"KENNEDY10","student":"Kennedy","school":"","active":true}]},"senior":{"heading":"Four years. One final homecoming.","body":"Senior mums can incorporate their name, Class of 2027, school, mascot, sports, clubs, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."},"policies":[{"title":"Payment in Full","body":"Full payment is required before production begins and confirms the order."},{"title":"Custom Order Refunds","body":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."},{"title":"Design Changes","body":"Changes after materials or design are approved may require a change fee and are subject to material availability."},{"title":"Rush Orders","body":"Rush orders may carry an additional fee and are accepted only when schedule and materials allow."}],"rush":[{"window":"14+ days","fee":"Standard pricing"},{"window":"7–13 days","fee":"+15%"},{"window":"4–6 days","fee":"+25%"},{"window":"72 hours or less","fee":"+40–50% if accepted"}],"gallery":[],"footer_text":"Custom homecoming mums made with heart and designed for spirit.","branding":{"business_name":"Heart & Soul Signature Mums","logo":"/heart-and-soul-logo.jpeg","tagline":"Made with Heart. Designed for Spirit.","phone":"","email":"","instagram":"","facebook":"","service_area":"Local pickup"},"announcement":{"enabled":true,"text":"Now accepting custom Homecoming orders — reserve your spot early."},"ordering":{"accepting_orders":true,"closed_message":"We are currently at capacity for new orders. Please check back soon.","minimum_lead_days":14,"pickup_instructions":"Pickup details and payment instructions are confirmed after your order is reviewed.","payment_policy":"Full payment is required before production begins.","refund_policy":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."}};
+const FALLBACK_CONFIG = {"hero":{"eyebrow":"PREMIUM • PERSONALIZED • ONE OF A KIND","title_before":"No two mums","title_emphasis":"should be the same.","body":"Every Heart & Soul mum is designed around the student wearing it — their school, colors, personality, activities, accomplishments and homecoming memories."},"difference":{"heading":"A wearable keepsake of their high-school experience.","body":"Names, class year, school pride, activities, charms, photos, custom ribbon and personal details can all become part of the design.","tagline":"Don’t see it? Ask us. If we can make it, we’ll put it on your mum."},"packages":{"Mini Mum":{"price":65,"label":"SMALL + SWEET","description":"A 10-inch mini mum with one 6-inch flower, 2 colors + filler, 3 charms, Homecoming lettering and name lettering."},"Garter":{"price":115,"label":"COMPACT TRADITION","description":"A 12-inch garter with one 6-inch flower, 2 standard colors + filler, 3 charms, Homecoming lettering, name lettering and class year."},"Classic":{"price":195,"label":"TRADITIONAL FAVORITE","description":"A 24-inch traditional mum with one 7.5-inch flower, 2 standard colors + filler, 5 charms, Homecoming/name/class-year lettering and 1 specialty chain or braid."},"Signature":{"price":260,"label":"ELEVATED + PERSONAL","description":"A 24-inch elevated mum with one 9-inch flower, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Signature Plus":{"price":325,"label":"FULLER STATEMENT DESIGN","description":"A 24-inch statement mum built around four 6-inch flowers, 3 standard colors + filler, up to 7 charms, Homecoming/name/class-year lettering and 2 specialty chains or braids."},"Showstopper":{"price":500,"label":"FULLY CUSTOM • QUOTED","description":"Starting at $500. Fully custom and quoted based on size, flowers, ribbon, specialty work, charms and overall design complexity."}},"pricing":{"lengths":{"Standard":0,"Long":18,"Extra Long":30},"fullness":{"Standard":0,"Xtra Full":20},"addons":{"Light It Up Package":35,"Bling Package":25,"Feather Package":15,"Charm Package":15,"Photo Package":35,"Sweetheart Package":15,"Stuffed Animal":15,"Extra Words":0},"braids":{"None":0,"Simple Braid":15,"Thick Braid":25},"printed_ribbon":{"None":0,"1 custom ribbon":7,"2 custom ribbons":14,"3 custom ribbons":21},"school_name_ribbon":7,"extra_word_each":7},"referral":{"discount_percent":10,"reward_orders":5,"reward_text":"Free Classic mum after 5 fully paid, non-refunded qualifying orders.","codes":[{"code":"KENNEDY10","student":"Kennedy","school":"","active":true}]},"senior":{"heading":"Four years. One final homecoming.","body":"Senior mums can incorporate their name, Class of 2027, school pride, activities, accomplishments, photos, custom ribbon, premium metallics and the memories that defined high school."},"policies":[{"title":"Payment in Full","body":"Full payment is required before production begins and confirms the order."},{"title":"Custom Order Refunds","body":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."},{"title":"Design Changes","body":"Changes after materials or design are approved may require a change fee and are subject to material availability."},{"title":"Rush Orders","body":"Rush orders may carry an additional fee and are accepted only when schedule and materials allow."}],"rush":[{"window":"14+ days","fee":"Standard pricing"},{"window":"7–13 days","fee":"+15%"},{"window":"4–6 days","fee":"+25%"},{"window":"72 hours or less","fee":"+40–50% if accepted"}],"gallery":[],"footer_text":"Custom homecoming mums made with heart and designed for spirit.","branding":{"business_name":"Heart & Soul Signature Mums","logo":"/heart-and-soul-logo.jpeg","tagline":"Made with Heart. Designed for Spirit.","phone":"","email":"","instagram":"","facebook":"","service_area":"Local pickup • Shipping optional based on approval"},"announcement":{"enabled":true,"text":"Now accepting custom Homecoming orders — reserve your spot early."},"ordering":{"accepting_orders":true,"closed_message":"We are currently at capacity for new orders. Please check back soon.","minimum_lead_days":14,"pickup_instructions":"Pickup details and payment instructions are confirmed after your order is reviewed. Shipping is optional based on approval.","payment_policy":"Full payment is required before production begins.","refund_policy":"Because every mum is custom-made, payments are nonrefundable once materials have been purchased or production has begun."}};
 
 
 function normalizeOwnerConfig(cfg){
@@ -77,12 +77,12 @@ function applyPackageConfig(){
     if(radio){
       radio.dataset.price = cfg.price;
       const small = radio.closest('label')?.querySelector('small');
-      if(small) small.textContent = name === 'Showstopper' ? `${priceLabel(cfg.price,'+')} / quote` : priceLabel(cfg.price,'+');
+      if(small) small.textContent = name === 'Showstopper' ? `${priceLabel(cfg.price,'+')} / quote` : priceLabel(cfg.price);
     }
     const card = cards.find(c => c.querySelector('h3')?.textContent.trim() === name);
     if(card){
       const label=card.querySelector('.package-label'); if(label && cfg.label) label.textContent=cfg.label;
-      const price=card.querySelector('.price'); if(price) price.textContent=priceLabel(cfg.price,'+');
+      const price=card.querySelector('.price'); if(price) price.textContent=name === 'Showstopper' ? priceLabel(cfg.price,'+') : priceLabel(cfg.price);
       const desc=card.querySelector('p'); if(desc && cfg.description) desc.textContent=cfg.description;
     }
   }
@@ -156,7 +156,6 @@ function applySiteConfig(){
   if(helper) helper.textContent=`Have a code from one of our selected student representatives? Enter it here for ${SITE_CONFIG.referral.discount_percent}% off your mum order.`;
   document.title=`${SITE_CONFIG.business_name} | Custom Homecoming Mums`;
   applyPackageConfig();
-  applySelectPrices('size',SITE_CONFIG.pricing?.sizes);
   applySelectPrices('length',SITE_CONFIG.pricing?.lengths);
   applySelectPrices('fullness',SITE_CONFIG.pricing?.fullness);
   applySelectPrices('braid',SITE_CONFIG.pricing?.braids);
@@ -204,6 +203,50 @@ const referralNote = document.getElementById('referralNote');
 const promoInput = document.getElementById('promoCode');
 const promoMessage = document.getElementById('promoMessage');
 
+
+function packageStandardLength(packageName){
+  if(packageName === 'Mini Mum') return '10 in';
+  if(packageName === 'Garter') return '12 in';
+  return '24 in';
+}
+function packageColorCount(packageName){
+  return ['Signature','Signature Plus','Showstopper'].includes(packageName) ? 3 : 2;
+}
+function updatePackageDependentFields(){
+  const pkg=document.querySelector('input[name="package"]:checked')?.value || 'Mini Mum';
+  const count=packageColorCount(pkg);
+  const third=document.getElementById('thirdColorField');
+  if(third) third.hidden=count<3;
+  const help=document.getElementById('colorCountHelp');
+  if(help){
+    help.textContent = pkg==='Showstopper'
+      ? 'Showstopper colors are fully custom. Start with up to 3 standard colors plus a filler/accent color.'
+      : `This package includes ${count} standard color${count===1?'':'s'} plus a filler/accent color (normally white).`;
+  }
+  const lengthSel=form.elements.length;
+  if(lengthSel){
+    const first=lengthSel.options[0];
+    first.textContent=`Standard — ${packageStandardLength(pkg)} included`;
+  }
+}
+function updateConditionalAddonFields(){
+  addonChecks.forEach(input=>{
+    const target=input.dataset.detail ? document.getElementById(input.dataset.detail) : null;
+    if(target) target.hidden=!input.checked;
+  });
+}
+function extraWordCharge(){
+  const checked=addonChecks.find(a=>a.value==='Extra Words')?.checked;
+  if(!checked) return 0;
+  const qty=Math.max(1,Number(form.elements.extraWordQty?.value||1));
+  return qty*Number(SITE_CONFIG.pricing?.extra_word_each||7);
+}
+function schoolRibbonCharge(){
+  return String(form.elements.schoolRibbonText?.value||'').trim()
+    ? Number(SITE_CONFIG.pricing?.school_name_ribbon||7)
+    : 0;
+}
+
 function selectPrice(select){
   const opt = select.options[select.selectedIndex];
   return Number(opt.dataset.price || 0);
@@ -215,18 +258,19 @@ function calc(){
   const pkg = document.querySelector('input[name="package"]:checked');
   const base = Number(pkg.dataset.price);
   const structure = pricedSelects
-    .filter(s => ['size','length','fullness'].includes(s.name))
+    .filter(s => ['length','fullness'].includes(s.name))
     .reduce((a,s)=>a+selectPrice(s),0);
   const specialty = pricedSelects
     .filter(s => ['braid','printedRibbon'].includes(s.name))
     .reduce((a,s)=>a+selectPrice(s),0);
-  const addons = addonChecks.filter(a=>a.checked).reduce((sum,a)=>sum+Number(a.dataset.price),0);
-  const extras = specialty + addons;
+  const addons = addonChecks.filter(a=>a.checked).reduce((sum,a)=>sum+Number(a.dataset.price||0),0);
+  const dynamicExtras = extraWordCharge() + schoolRibbonCharge();
+  const extras = specialty + addons + dynamicExtras;
   const subtotal = base + structure + extras;
   const discount = activePromo ? subtotal * (SITE_CONFIG.referral.discount_percent / 100) : 0;
   const total = subtotal - discount;
 
-  summaryPackage.textContent = `${pkg.value} Mum`;
+  summaryPackage.textContent = pkg.value === 'Garter' ? 'Garter' : `${pkg.value} Mum`;
   packagePrice.textContent = money(base);
   structurePrice.textContent = money(structure);
   addonPrice.textContent = money(extras);
@@ -237,14 +281,18 @@ function calc(){
   referralNote.hidden = !activePromo;
   referralNote.textContent = activePromo ? `Referral credited to ${activePromo.name}${activePromo.school ? ` • ${activePromo.school}` : ''} • Code ${activePromo.code}` : '';
   quoteNote.textContent = pkg.value === 'Showstopper'
-    ? 'Showstopper pricing begins here. Final price requires a custom design quote before payment.'
+    ? 'Showstopper starts at $500. Final price requires a custom design quote before payment.'
     : 'Final price is confirmed after design review. Highly custom requests or special-order materials may affect pricing.';
 
   preview.style.setProperty('--preview-primary', form.elements.primaryColor.value);
   preview.style.setProperty('--preview-secondary', form.elements.secondaryColor.value);
+  updatePackageDependentFields();
+  updateConditionalAddonFields();
   return {pkg,base,structure,extras,subtotal,discount,total};
 }
 [...packageRadios,...addonChecks,...pricedSelects].forEach(x=>x.addEventListener('change',calc));
+form.elements.extraWordQty?.addEventListener('input',calc);
+form.elements.schoolRibbonText?.addEventListener('input',calc);
 form.elements.primaryColor.addEventListener('input',calc);
 form.elements.secondaryColor.addEventListener('input',calc);
 
@@ -284,50 +332,55 @@ document.querySelectorAll('.select-package').forEach(btn=>{
 
 function orderText(){
   const d=new FormData(form), c=calc();
-  const add=addonChecks.filter(x=>x.checked).map(x=>`${x.value} (+$${x.dataset.price})`);
+  const add=addonChecks.filter(x=>x.checked).map(x=>{
+    if(x.value==='Extra Words') return `Extra Words — ${d.get('extraWordQty')||1} × $7`;
+    return `${x.value} (+$${x.dataset.price})`;
+  });
   const braid=form.elements.braid.options[form.elements.braid.selectedIndex].text;
   const printed=form.elements.printedRibbon.options[form.elements.printedRibbon.selectedIndex].text;
   const fileCount=form.elements.inspiration.files?.length || 0;
+  const thirdColor=packageColorCount(c.pkg.value)>=3
+    ? `${d.get('thirdColorName') || d.get('thirdColor')} (${d.get('thirdColor')})`
+    : 'Not included with selected package';
   return `HEART & SOUL SIGNATURE MUMS — ORDER REQUEST
 
 TIER
-${c.pkg.value} — starting at ${money(c.base)}
+${c.pkg.value} — ${c.pkg.value==='Showstopper' ? 'starting at ' : ''}${money(c.base)}
 
-SIZE / STRUCTURE
-Size: ${d.get('size')}
-Length: ${d.get('length')}
+STRUCTURE
+Base length: ${packageStandardLength(c.pkg.value)}
+Length option: ${d.get('length')}
 Fullness: ${d.get('fullness')}
 
 COLORS + STYLE
-Primary: ${d.get('primaryColorName') || d.get('primaryColor')}
-Secondary: ${d.get('secondaryColorName') || d.get('secondaryColor')}
-Accent: ${d.get('accentColor') || '—'}
+Standard color 1: ${d.get('primaryColorName') || d.get('primaryColor')} (${d.get('primaryColor')})
+Standard color 2: ${d.get('secondaryColorName') || d.get('secondaryColor')} (${d.get('secondaryColor')})
+Standard color 3: ${thirdColor}
+Filler / accent: ${d.get('accentColorName') || 'White'} (${d.get('accentColor')})
 Style: ${d.get('style')}
 
 STUDENT
 Name: ${d.get('studentName')}
-Nickname: ${d.get('nickname') || '—'}
-School: ${d.get('school')}
-Mascot: ${d.get('mascot') || '—'}
+Name to put on ribbon: ${d.get('ribbonName') || '—'}
+Add School Name on Ribbon (+$7): ${d.get('schoolRibbonText') || '—'}
 Grade: ${d.get('grade')}
 Graduation year: ${d.get('gradYear') || '—'}
-Jersey / player number: ${d.get('number') || '—'}
 Homecoming date: ${d.get('homecomingDate')}
 
-ACTIVITIES + PERSONAL
-Sports / clubs / activities:
+ACTIVITIES + PERSONALITY (CHARM DIRECTION)
 ${d.get('activities') || '—'}
 
-Favorite things: ${d.get('favorites') || '—'}
-Favorite song: ${d.get('song') || '—'}
 Bible verse / quote: ${d.get('quote') || '—'}
-Special date / relationship detail: ${d.get('specialDate') || '—'}
 
-PREMIUM UPGRADES
-${add.length ? add.join('\n') : 'None selected'}
+ADD-ONS
+${add.length ? add.join('\\n') : 'None selected'}
+LED color: ${addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? (d.get('ledColorName') || d.get('ledColor') || '—') : '—'}
+Charm details: ${addonChecks.find(x=>x.value==='Charm Package')?.checked ? (d.get('charmDetails') || '—') : '—'}
+Stuffed animal details: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalDetails') || '—') : '—'}
+Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty')||1} word(s))` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
-Ribbon wording: ${d.get('ribbonText') || '—'}
+Printed ribbon wording: ${d.get('ribbonText') || '—'}
 
 CUSTOM VISION
 ${d.get('instructions') || '—'}
@@ -339,7 +392,6 @@ Promo code: ${activePromo ? activePromo.code : 'None'}
 Referral student: ${activePromo ? activePromo.name : '—'}
 School: ${activePromo ? activePromo.school : '—'}
 Discount: ${activePromo ? money(c.discount) : '$0'}
-Referral status: ${activePromo ? `Counts toward ${SITE_CONFIG.referral.reward_orders} qualifying orders only after payment. Reward: ${SITE_CONFIG.referral.reward_text}` : '—'}
 
 CUSTOMER
 Name: ${d.get('customerName')}
@@ -352,6 +404,7 @@ PROMO DISCOUNT: ${activePromo ? '-' + money(c.discount) : '$0'}
 ESTIMATED TOTAL: ${money(c.total)}
 PAYMENT DUE IN FULL: ${money(c.total)}
 
+Shipping is optional based on approval.
 Final design and pricing subject to review and approval.`;
 }
 
@@ -385,29 +438,33 @@ function buildPrivateOrderPayload(orderNo,c){
     orderNumber:orderNo,
     botField:d.get('bot-field')||'',
     package:d.get('package'),
-    size:d.get('size'),
+    baseLength:packageStandardLength(d.get('package')),
     length:d.get('length'),
     fullness:d.get('fullness'),
     primaryColor:d.get('primaryColor'),
     primaryColorName:d.get('primaryColorName'),
     secondaryColor:d.get('secondaryColor'),
     secondaryColorName:d.get('secondaryColorName'),
+    thirdColor:packageColorCount(d.get('package'))>=3 ? d.get('thirdColor') : '',
+    thirdColorName:packageColorCount(d.get('package'))>=3 ? d.get('thirdColorName') : '',
     accentColor:d.get('accentColor'),
+    accentColorName:d.get('accentColorName'),
     style:d.get('style'),
     studentName:d.get('studentName'),
-    nickname:d.get('nickname'),
-    school:d.get('school'),
-    mascot:d.get('mascot'),
+    ribbonName:d.get('ribbonName'),
+    schoolRibbonText:d.get('schoolRibbonText'),
     grade:d.get('grade'),
     gradYear:d.get('gradYear'),
-    number:d.get('number'),
     homecomingDate:d.get('homecomingDate'),
     activities:d.get('activities'),
-    favorites:d.get('favorites'),
-    song:d.get('song'),
     quote:d.get('quote'),
-    specialDate:d.get('specialDate'),
     addons:addonChecks.filter(x=>x.checked).map(x=>x.value),
+    ledColor:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColor') : '',
+    ledColorName:addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? d.get('ledColorName') : '',
+    charmDetails:addonChecks.find(x=>x.value==='Charm Package')?.checked ? d.get('charmDetails') : '',
+    stuffedAnimalDetails:addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? d.get('stuffedAnimalDetails') : '',
+    extraWordQty:addonChecks.find(x=>x.value==='Extra Words')?.checked ? Number(d.get('extraWordQty')||1) : 0,
+    extraWordsText:addonChecks.find(x=>x.value==='Extra Words')?.checked ? d.get('extraWordsText') : '',
     braid:d.get('braid'),
     printedRibbon:d.get('printedRibbon'),
     ribbonText:d.get('ribbonText'),
@@ -547,9 +604,11 @@ function buildOwnerOrderView(){
   const add=addonChecks.filter(x=>x.checked).map(x=>x.value);
   const braid=form.elements.braid.options[form.elements.braid.selectedIndex].text;
   const printed=form.elements.printedRibbon.options[form.elements.printedRibbon.selectedIndex].text;
-  const primaryHex=d.get('primaryColor'), secondaryHex=d.get('secondaryColor');
+  const primaryHex=d.get('primaryColor'), secondaryHex=d.get('secondaryColor'), thirdHex=d.get('thirdColor'), accentHex=d.get('accentColor');
   const primary=friendlyColor(d.get('primaryColorName'),primaryHex);
   const secondary=friendlyColor(d.get('secondaryColorName'),secondaryHex);
+  const third=friendlyColor(d.get('thirdColorName'),thirdHex);
+  const accent=friendlyColor(d.get('accentColorName'),accentHex);
   const fileCount=form.elements.inspiration.files?.length || 0;
 
   document.getElementById('testOrderNumber').textContent=createTestOrderNumber();
@@ -557,39 +616,39 @@ function buildOwnerOrderView(){
 
   document.getElementById('ownerStudent').innerHTML =
     ownerField('Student',d.get('studentName'))+
-    ownerField('Nickname',d.get('nickname'))+
-    ownerField('School',d.get('school'))+
-    ownerField('Mascot',d.get('mascot'))+
+    ownerField('Name on ribbon',d.get('ribbonName'))+
+    ownerField('School name on ribbon',d.get('schoolRibbonText'))+
     ownerField('Grade',d.get('grade'))+
     ownerField('Graduation year',d.get('gradYear'))+
-    ownerField('Jersey / player #',d.get('number'))+
     ownerField('Homecoming date',d.get('homecomingDate'));
 
   document.getElementById('ownerBuild').innerHTML =
-    ownerField('Tier',`${c.pkg.value} • starts at ${money(c.base)}`)+
-    ownerField('Size',d.get('size'))+
-    ownerField('Length',d.get('length'))+
+    ownerField('Tier',`${c.pkg.value} • ${c.pkg.value==='Showstopper'?'starts at ':''}${money(c.base)}`)+
+    ownerField('Base length',packageStandardLength(c.pkg.value))+
+    ownerField('Length option',d.get('length'))+
     ownerField('Fullness',d.get('fullness'));
 
   document.getElementById('ownerColors').innerHTML = `
-    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(primaryHex)}"></span>Primary: ${escapeHtml(primary)} <small>${escapeHtml(primaryHex)}</small></div>
-    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(secondaryHex)}"></span>Secondary: ${escapeHtml(secondary)} <small>${escapeHtml(secondaryHex)}</small></div>
-    <div class="color-chip">Accent: ${escapeHtml(d.get('accentColor') || 'None')}</div>
+    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(primaryHex)}"></span>Color 1: ${escapeHtml(primary)} <small>${escapeHtml(primaryHex)}</small></div>
+    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(secondaryHex)}"></span>Color 2: ${escapeHtml(secondary)} <small>${escapeHtml(secondaryHex)}</small></div>
+    ${packageColorCount(c.pkg.value)>=3 ? `<div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(thirdHex)}"></span>Color 3: ${escapeHtml(third)} <small>${escapeHtml(thirdHex)}</small></div>` : ''}
+    <div class="color-chip"><span class="color-swatch" style="background:${escapeAttr(accentHex)}"></span>Filler / accent: ${escapeHtml(accent)} <small>${escapeHtml(accentHex)}</small></div>
     <div class="color-chip">Style: ${escapeHtml(d.get('style') || '—')}</div>`;
 
   document.getElementById('ownerPersonal').textContent =
-`Sports / clubs / activities:
+`Activities + personality (charm direction):
 ${d.get('activities') || '—'}
 
-Favorite things: ${d.get('favorites') || '—'}
-Favorite song: ${d.get('song') || '—'}
-Bible verse / quote: ${d.get('quote') || '—'}
-Special date / relationship detail: ${d.get('specialDate') || '—'}`;
+Bible verse / quote: ${d.get('quote') || '—'}`;
 
   document.getElementById('ownerUpgrades').textContent =
-`Premium packages:
-${add.length ? '• '+add.join('\n• ') : 'None selected'}
+`Add-ons:
+${add.length ? '• '+add.join('\\n• ') : 'None selected'}
 
+LED color: ${addonChecks.find(x=>x.value==='Light It Up Package')?.checked ? (d.get('ledColorName') || d.get('ledColor') || '—') : '—'}
+Charm details: ${addonChecks.find(x=>x.value==='Charm Package')?.checked ? (d.get('charmDetails') || '—') : '—'}
+Stuffed animal: ${addonChecks.find(x=>x.value==='Stuffed Animal')?.checked ? (d.get('stuffedAnimalDetails') || '—') : '—'}
+Extra words: ${addonChecks.find(x=>x.value==='Extra Words')?.checked ? `${d.get('extraWordsText') || '—'} (${d.get('extraWordQty') || 1})` : '—'}
 Specialty braid: ${braid}
 Custom printed ribbon: ${printed}
 Printed ribbon wording: ${d.get('ribbonText') || '—'}

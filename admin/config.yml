@@ -56,64 +56,55 @@ collections:
             name: "packages"
             widget: "object"
             fields:
-              - label: "Classic"
-                name: "Classic"
+              - label: "Mini Mum"
+                name: "Mini Mum"
                 widget: "object"
                 fields: &package_fields
                   - { label: "Starting price", name: "price", widget: "number", value_type: "int", min: 0 }
                   - { label: "Small label", name: "label", widget: "string" }
                   - { label: "Description", name: "description", widget: "text" }
+              - { label: "Garter", name: "Garter", widget: "object", fields: *package_fields }
+              - { label: "Classic", name: "Classic", widget: "object", fields: *package_fields }
               - { label: "Signature", name: "Signature", widget: "object", fields: *package_fields }
-              - { label: "Deluxe", name: "Deluxe", widget: "object", fields: *package_fields }
+              - { label: "Signature Plus", name: "Signature Plus", widget: "object", fields: *package_fields }
               - { label: "Showstopper", name: "Showstopper", widget: "object", fields: *package_fields }
 
           - label: "Pricing Options"
             name: "pricing"
             widget: "object"
             fields:
-              - label: "Size prices"
-                name: "sizes"
-                widget: "object"
-                fields:
-                  - { label: "Standard", name: "Standard", widget: "number", value_type: "int" }
-                  - { label: "Large", name: "Large", widget: "number", value_type: "int" }
-                  - { label: "XL", name: "XL", widget: "number", value_type: "int" }
-                  - { label: "Oversized", name: "Oversized", widget: "number", value_type: "int" }
               - label: "Length prices"
                 name: "lengths"
                 widget: "object"
                 fields:
                   - { label: "Standard", name: "Standard", widget: "number", value_type: "int" }
                   - { label: "Long", name: "Long", widget: "number", value_type: "int" }
-                  - { label: "Floor Length", name: "Floor Length", widget: "number", value_type: "int" }
-                  - { label: "Extra Floor Length", name: "Extra Floor Length", widget: "number", value_type: "int" }
+                  - { label: "Extra Long", name: "Extra Long", widget: "number", value_type: "int" }
               - label: "Fullness prices"
                 name: "fullness"
                 widget: "object"
                 fields:
-                  - { label: "Classic", name: "Classic", widget: "number", value_type: "int" }
-                  - { label: "Extra Full", name: "Extra Full", widget: "number", value_type: "int" }
-                  - { label: "Extreme", name: "Extreme", widget: "number", value_type: "int" }
-              - label: "Premium add-on prices"
+                  - { label: "Standard", name: "Standard", widget: "number", value_type: "int" }
+                  - { label: "Xtra Full", name: "Xtra Full", widget: "number", value_type: "int" }
+              - label: "Add-on prices"
                 name: "addons"
                 widget: "object"
                 fields:
                   - { label: "Light It Up", name: "Light It Up Package", widget: "number", value_type: "int" }
-                  - { label: "Bling Package", name: "Bling Package", widget: "number", value_type: "int" }
+                  - { label: "Bling", name: "Bling Package", widget: "number", value_type: "int" }
                   - { label: "Feather Package", name: "Feather Package", widget: "number", value_type: "int" }
                   - { label: "Charm Package", name: "Charm Package", widget: "number", value_type: "int" }
-                  - { label: "Photo Package", name: "Photo Package", widget: "number", value_type: "int" }
-                  - { label: "Sport Package", name: "Sport Package", widget: "number", value_type: "int" }
-                  - { label: "Senior Package", name: "Senior Package", widget: "number", value_type: "int" }
+                  - { label: "Photo", name: "Photo Package", widget: "number", value_type: "int" }
                   - { label: "Sweetheart Package", name: "Sweetheart Package", widget: "number", value_type: "int" }
+                  - { label: "Stuffed Animal", name: "Stuffed Animal", widget: "number", value_type: "int" }
+                  - { label: "Extra Words checkbox base", name: "Extra Words", widget: "number", value_type: "int", hint: "Keep at 0; per-word price is set below." }
               - label: "Braid prices"
                 name: "braids"
                 widget: "object"
                 fields:
                   - { label: "None", name: "None", widget: "number", value_type: "int" }
-                  - { label: "Simple specialty braid", name: "Simple specialty braid", widget: "number", value_type: "int" }
-                  - { label: "Detailed specialty braid", name: "Detailed specialty braid", widget: "number", value_type: "int" }
-                  - { label: "Elaborate braid", name: "Elaborate braid", widget: "number", value_type: "int" }
+                  - { label: "Simple Braid", name: "Simple Braid", widget: "number", value_type: "int" }
+                  - { label: "Thick Braid", name: "Thick Braid", widget: "number", value_type: "int" }
               - label: "Custom printed ribbon prices"
                 name: "printed_ribbon"
                 widget: "object"
@@ -122,6 +113,8 @@ collections:
                   - { label: "1 custom ribbon", name: "1 custom ribbon", widget: "number", value_type: "int" }
                   - { label: "2 custom ribbons", name: "2 custom ribbons", widget: "number", value_type: "int" }
                   - { label: "3 custom ribbons", name: "3 custom ribbons", widget: "number", value_type: "int" }
+              - { label: "Add School Name on Ribbon price", name: "school_name_ribbon", widget: "number", value_type: "int" }
+              - { label: "Extra word price (each)", name: "extra_word_each", widget: "number", value_type: "int" }
 
           - label: "Ordering Settings"
             name: "ordering"
