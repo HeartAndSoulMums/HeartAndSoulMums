@@ -205,6 +205,39 @@ const promoInput = document.getElementById('promoCode');
 const promoMessage = document.getElementById('promoMessage');
 
 
+
+const PACKAGE_BASE_PRICES = {
+  'Mini Mum': 65,
+  'Garter': 115,
+  'Classic': 195,
+  'Signature': 260,
+  'Signature Plus': 325,
+  'Showstopper': 500
+};
+
+function getSelectedPackageInfo(){
+  const radio=document.querySelector('input[name="package"]:checked');
+  const name=radio?.value || 'Classic';
+  const base=PACKAGE_BASE_PRICES[name] ?? Number(radio?.dataset.price || 0);
+  return {radio,name,base};
+}
+
+function updatePackageEstimateBase(){
+  const {name,base}=getSelectedPackageInfo();
+  if(summaryPackage) summaryPackage.textContent = name === 'Garter' ? 'Garter' : `${name} Mum`;
+  if(packagePrice) packagePrice.textContent = money(base);
+
+  // Preserve currently selected extras/structure if they are already displayed.
+  const structureValue = Number((structurePrice?.textContent || '$0').replace(/[^0-9.]/g,'')) || 0;
+  const extrasValue = Number((addonPrice?.textContent || '$0').replace(/[^0-9.]/g,'')) || 0;
+  const subtotal = base + structureValue + extrasValue;
+  const discount = activePromo ? subtotal * (SITE_CONFIG?.referral?.discount_percent || 10) / 100 : 0;
+  const total = subtotal - discount;
+
+  if(totalPrice) totalPrice.textContent = money(total);
+  if(payInFullPrice) payInFullPrice.textContent = money(total);
+}
+
 function packageStandardLength(packageName){
   if(packageName === 'Mini Mum') return '10 in';
   if(packageName === 'Garter') return '12 in';
@@ -265,52 +298,78 @@ function selectPrice(select){
 function money(n){
   return n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:Number.isInteger(n)?0:2});
 }
-function calc(){syncConditionalDetails();
-  const pkg = document.querySelector('input[name="package"]:checked');
-  const selectedPackageName = pkg?.value || 'Mini Mum';
-  const configuredBase = Number(SITE_CONFIG.packages?.[selectedPackageName]?.price);
-  const base = Number.isFinite(configuredBase) ? configuredBase : Number(pkg?.dataset.price || 0);
-  const structure = pricedSelects
-    .filter(s => ['length','fullness'].includes(s.name))
-    .reduce((a,s)=>a+selectPrice(s),0);
-  const specialty = pricedSelects
-    .filter(s => ['braid','printedRibbon'].includes(s.name))
-    .reduce((a,s)=>a+selectPrice(s),0);
-  const addons = addonChecks.filter(a=>a.checked).reduce((sum,a)=>sum+Number(a.dataset.price||0),0);
-  const dynamicExtras = extraWordCharge() + schoolRibbonCharge();
+function calc(){
+  // Package/base price updates first so the live estimate can never remain stale.
+  const {radio:pkg,name:selectedPackageName,base}=getSelectedPackageInfo();
+  updatePackageDependentFields();
+
+  if(summaryPackage) summaryPackage.textContent = selectedPackageName === 'Garter' ? 'Garter' : `${selectedPackageName} Mum`;
+  if(packagePrice) packagePrice.textContent = money(base);
+
+  let structure=0;
+  let specialty=0;
+  let addons=0;
+  let dynamicExtras=0;
+
+  try{
+    structure = pricedSelects
+      .filter(s => ['length','fullness'].includes(s.name))
+      .reduce((a,s)=>a+selectPrice(s),0);
+
+    specialty = pricedSelects
+      .filter(s => ['braid','printedRibbon'].includes(s.name))
+      .reduce((a,s)=>a+selectPrice(s),0);
+
+    addons = addonChecks
+      .filter(a=>a.checked)
+      .reduce((sum,a)=>sum+Number(a.dataset.price||0),0);
+
+    dynamicExtras = extraWordCharge() + schoolRibbonCharge();
+  }catch(err){
+    console.error('Optional pricing calculation error:',err);
+  }
+
   const extras = specialty + addons + dynamicExtras;
   const subtotal = base + structure + extras;
-  const discount = activePromo ? subtotal * (SITE_CONFIG.referral.discount_percent / 100) : 0;
+  const discountPercent = Number(SITE_CONFIG?.referral?.discount_percent || 10);
+  const discount = activePromo ? subtotal * (discountPercent / 100) : 0;
   const total = subtotal - discount;
 
-  summaryPackage.textContent = selectedPackageName === 'Garter' ? 'Garter' : `${selectedPackageName} Mum`;
-  packagePrice.textContent = money(base);
-  structurePrice.textContent = money(structure);
-  addonPrice.textContent = money(extras);
-  discountRow.hidden = !activePromo;
-  discountPrice.textContent = `-${money(discount)}`;
-  totalPrice.textContent = money(total);
+  if(structurePrice) structurePrice.textContent = money(structure);
+  if(addonPrice) addonPrice.textContent = money(extras);
+  if(discountRow) discountRow.hidden = !activePromo;
+  if(discountPrice) discountPrice.textContent = `-${money(discount)}`;
+  if(totalPrice) totalPrice.textContent = money(total);
   if(payInFullPrice) payInFullPrice.textContent = money(total);
-  referralNote.hidden = !activePromo;
-  referralNote.textContent = activePromo ? `Referral credited to ${activePromo.name}${activePromo.school ? ` • ${activePromo.school}` : ''} • Code ${activePromo.code}` : '';
-  quoteNote.textContent = selectedPackageName === 'Showstopper'
-    ? 'Showstopper starts at $500. Final price requires a custom design quote before payment.'
-    : 'Final price is confirmed after design review. Highly custom requests or special-order materials may affect pricing.';
 
-  preview.style.setProperty('--preview-primary', form.elements.primaryColor.value);
-  preview.style.setProperty('--preview-secondary', form.elements.secondaryColor.value);
-  updatePackageDependentFields();
-  updateConditionalAddonFields();
+  if(referralNote){
+    referralNote.hidden = !activePromo;
+    referralNote.textContent = activePromo
+      ? `Referral credited to ${activePromo.name}${activePromo.school ? ` • ${activePromo.school}` : ''} • Code ${activePromo.code}`
+      : '';
+  }
+
+  if(quoteNote){
+    quoteNote.textContent = selectedPackageName === 'Showstopper'
+      ? 'Showstopper starts at $500. Final price requires a custom design quote before payment.'
+      : 'Final price is confirmed after design review. Highly custom requests or special-order materials may affect pricing.';
+  }
+
+  try{
+    if(preview && form.elements.primaryColor) preview.style.setProperty('--preview-primary', form.elements.primaryColor.value);
+    if(preview && form.elements.secondaryColor) preview.style.setProperty('--preview-secondary', form.elements.secondaryColor.value);
+    updateConditionalAddonFields();
+  }catch(err){
+    console.error('Preview update error:',err);
+  }
+
   return {pkg,base,structure,extras,subtotal,discount,total};
 }
 packageRadios.forEach(radio=>{
   radio.addEventListener('change',()=>{
     updatePackageDependentFields();
-    try{calc();}catch(err){
-      console.error('Package update error:',err);
-      // Still keep the package-dependent UI correct even if an unrelated field fails.
-      updatePackageDependentFields();
-    }
+    updatePackageEstimateBase();
+    calc();
   });
 });
 [...addonChecks,...pricedSelects].forEach(x=>x.addEventListener('change',()=>{
@@ -354,7 +413,7 @@ document.querySelectorAll('.select-package').forEach(btn=>{
 
     const selectedPackage=btn.dataset.package;
     const r=packageRadios.find(x=>x.value===selectedPackage);
-    if(r) r.checked=true;
+    if(r){ r.checked=true; updatePackageDependentFields(); updatePackageEstimateBase(); }
 
     // Move the customer to the actual beginning of the order form first.
     const target=document.getElementById('step1');
